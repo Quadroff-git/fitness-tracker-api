@@ -1,0 +1,35 @@
+services:
+  server:
+      build:
+        context: .
+      environment:
+        - JWT_SECRET=${JWT_SECRET}
+        - SPRING_DATASOURCE_PASSWORD=${POSTGRES_PASSWORD}
+        - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/fitness_tracker
+        - SPRING_DATASOURCE_USERNAME=postgres
+      ports:
+        - 8080:8080
+      depends_on:
+        db:
+          condition: service_healthy
+
+  db:
+     image: postgres
+     restart: always
+     user: postgres
+     volumes:
+       - db-data:/var/lib/postgresql
+     environment:
+       - POSTGRES_DB=fitness_tracker
+       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+     expose:
+       - 5432
+     healthcheck:
+       test: [ "CMD", "pg_isready" ]
+       interval: 10s
+       timeout: 5s
+       retries: 5
+
+
+volumes:
+   db-data:
