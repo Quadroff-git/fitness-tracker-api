@@ -2,9 +2,19 @@ package org.pileka.fitness_tracker_api.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
+@Entity
+@Table(name = "workout")
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class Workout {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
