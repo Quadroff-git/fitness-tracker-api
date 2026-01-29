@@ -1,9 +1,9 @@
-package org.pileka.fitness_tracker_api.auth.impl;
+package org.pileka.fitness_tracker_api.security.impl;
 
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.pileka.fitness_tracker_api.auth.JwtTokenProvider;
+import org.pileka.fitness_tracker_api.security.JwtTokenProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 

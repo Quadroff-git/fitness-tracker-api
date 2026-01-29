@@ -1,4 +1,4 @@
-package org.pileka.fitness_tracker_api.auth;
+package org.pileka.fitness_tracker_api.security;
 /**
  * A utility class for JWT tokens
  * */
