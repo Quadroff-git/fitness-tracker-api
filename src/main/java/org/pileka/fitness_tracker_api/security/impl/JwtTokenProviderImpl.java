@@ -30,6 +30,16 @@ public class JwtTokenProviderImpl implements JwtTokenProvider {
     }
 
     @Override
+    public Long getBearerTokenExpiration() {
+        return accessTokenExpiration;
+    }
+
+    @Override
+    public Long getRefreshTokenExpiration() {
+        return refreshTokenExpiration;
+    }
+
+    @Override
     public String generateBearerToken(String username) {
         return Jwts.builder()
                 .subject(username)

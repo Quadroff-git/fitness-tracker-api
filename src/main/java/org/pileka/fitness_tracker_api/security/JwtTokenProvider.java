@@ -3,6 +3,17 @@ package org.pileka.fitness_tracker_api.security;
  * A utility class for JWT tokens
  * */
 public interface JwtTokenProvider {
+
+    /**
+     * Get bearer token expiration period in milliseconds
+     */
+    Long getBearerTokenExpiration();
+
+    /**
+     * Get refresh token expiration period in milliseconds
+     */
+    Long getRefreshTokenExpiration();
+
     /**
      * Generate a bearer token
      *
