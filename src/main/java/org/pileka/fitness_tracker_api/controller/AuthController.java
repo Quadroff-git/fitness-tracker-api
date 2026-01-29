@@ -1,5 +1,6 @@
 package org.pileka.fitness_tracker_api.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.pileka.fitness_tracker_api.dto.auth.LoginDto;
 import org.pileka.fitness_tracker_api.dto.auth.TokenDto;
@@ -19,13 +20,13 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody RegistrationDto request) {
+    public ResponseEntity register(@Valid @RequestBody RegistrationDto request) {
         authService.register(request);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginDto request) {
+    public ResponseEntity<String> login(@Valid @RequestBody LoginDto request) {
         return getResponseFromTokenDto(authService.login(request));
     }
 
