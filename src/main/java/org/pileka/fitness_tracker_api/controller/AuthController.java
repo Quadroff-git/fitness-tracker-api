@@ -51,8 +51,10 @@ public class AuthController {
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
                 .body(String.format("""
-                            "access_token" : %s,
-                            "expires_in" : %d
+                            {
+                                "access_token" : "%s",
+                                "expires_in" : %d
+                            }
                             """, tokenDto.getBearerToken(), tokenDto.getAccessTokenExpiration() / 1000));
     }
 }
