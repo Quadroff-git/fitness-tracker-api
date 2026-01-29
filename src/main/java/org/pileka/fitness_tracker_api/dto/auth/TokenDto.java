@@ -7,5 +7,10 @@ import lombok.Data;
 @AllArgsConstructor
 public class TokenDto {
     private String bearerToken;
+
+    private Long accessTokenExpirationSeconds;
+
     private String refreshToken;
+
+    private Long refreshTokenExpirationSeconds;
 }
