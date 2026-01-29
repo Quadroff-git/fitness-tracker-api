@@ -4,6 +4,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Base service interface with CRUD operations
@@ -42,9 +43,10 @@ public interface BaseService<T, C, U, ID> {
      * Find entity by ID
      *
      * @param id entity identifier
-     * @return entity DTO
+     * @return entity DTO or null wrapped in Optional if no entity
+     * with specified ID is found
      */
-    T findById(ID id);
+    Optional<T> findById(ID id);
 
     /**
      * Check if entity exists by ID
@@ -55,18 +57,21 @@ public interface BaseService<T, C, U, ID> {
     boolean existsById(ID id);
 
     /**
-     * Update existing entity
+     * Update an existing entity
      *
      * @param id entity identifier
      * @param updateDto DTO for update
-     * @return updated DTO
+     * @return updated entity DTO or null wrapped in Optional if no entity
+     * with specified ID is found
      */
-    T update(ID id, U updateDto);
+    Optional<T> update(ID id, U updateDto);
 
     /**
-     * Delete entity by ID
+     * Delete an entity by ID
      *
      * @param id entity identifier
+     * @return deleted entity DTO or null wrapped in Optional if no entity
+     * with specified ID is found
      */
-    void delete(ID id);
+    Optional<T> delete(ID id);
 }
