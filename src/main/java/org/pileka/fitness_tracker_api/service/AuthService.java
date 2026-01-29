@@ -20,7 +20,7 @@ public interface AuthService {
      * Login an existing user
      *
      * @param request existing user's credentials
-     * @return a LoginResponse object with two valid JWT tokens
+     * @return a TokenDto object with two valid JWT tokens
      */
     TokenDto login(LoginDto request);
 
