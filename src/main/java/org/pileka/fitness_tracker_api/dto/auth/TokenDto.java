@@ -8,9 +8,9 @@ import lombok.Data;
 public class TokenDto {
     private String bearerToken;
 
-    private Long accessTokenExpirationSeconds;
+    private Long accessTokenExpiration;
 
     private String refreshToken;
 
-    private Long refreshTokenExpirationSeconds;
+    private Long refreshTokenExpiration;
 }
