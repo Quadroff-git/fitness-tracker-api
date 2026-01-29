@@ -1,7 +1,7 @@
 package org.pileka.fitness_tracker_api.service;
 
 import org.pileka.fitness_tracker_api.dto.auth.LoginRequest;
-import org.pileka.fitness_tracker_api.dto.auth.LoginResponse;
+import org.pileka.fitness_tracker_api.dto.auth.TokenDto;
 import org.pileka.fitness_tracker_api.dto.auth.RegistrationRequest;
 
 /**
@@ -22,5 +22,5 @@ public interface AuthService {
      * @param request existing user's credentials
      * @return a LoginResponse object with two valid JWT tokens
      */
-    LoginResponse login(LoginRequest request);
+    TokenDto login(LoginRequest request);
 }

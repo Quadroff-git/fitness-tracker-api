@@ -3,7 +3,7 @@ package org.pileka.fitness_tracker_api.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.pileka.fitness_tracker_api.domain.User;
 import org.pileka.fitness_tracker_api.dto.auth.LoginRequest;
-import org.pileka.fitness_tracker_api.dto.auth.LoginResponse;
+import org.pileka.fitness_tracker_api.dto.auth.TokenDto;
 import org.pileka.fitness_tracker_api.dto.auth.RegistrationRequest;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.security.JwtTokenProvider;
@@ -35,7 +35,7 @@ public class AuthServiceImpl implements org.pileka.fitness_tracker_api.service.A
     }
 
     @Override
-    public LoginResponse login(LoginRequest request) {
+    public TokenDto login(LoginRequest request) {
         // Let Spring Security validate credentials
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -52,6 +52,6 @@ public class AuthServiceImpl implements org.pileka.fitness_tracker_api.service.A
         String bearerToken = jwtTokenProvider.generateBearerToken(user.getUsername());
         String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUsername());
 
-        return new LoginResponse(bearerToken, refreshToken);
+        return new TokenDto(bearerToken, refreshToken);
     }
 }
