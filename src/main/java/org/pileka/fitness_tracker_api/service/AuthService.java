@@ -23,4 +23,12 @@ public interface AuthService {
      * @return a LoginResponse object with two valid JWT tokens
      */
     TokenDto login(LoginDto request);
+
+    /**
+     * Return new bearer and refresh token if the provided refresh token is valid
+     *
+     * @param refreshToken refresh token
+     * @return a TokenDto object with two fresh tokens
+     */
+    TokenDto refresh(String refreshToken);
 }

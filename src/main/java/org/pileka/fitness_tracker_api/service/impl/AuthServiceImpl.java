@@ -54,4 +54,9 @@ public class AuthServiceImpl implements org.pileka.fitness_tracker_api.service.A
 
         return new TokenDto(bearerToken, refreshToken);
     }
+
+    @Override
+    public TokenDto refresh(String refreshToken) {
+        return null;
+    }
 }
