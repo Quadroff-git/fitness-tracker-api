@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class LoginRequest {
+public class LoginDto {
     @NotBlank(message = "Username is required")
     private String username;
 

@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class RegistrationRequest {
+public class RegistrationDto {
     @NotBlank(message = "Username is required")
     private String username;
 

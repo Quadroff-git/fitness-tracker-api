@@ -1,9 +1,9 @@
 package org.pileka.fitness_tracker_api.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.pileka.fitness_tracker_api.dto.auth.LoginRequest;
+import org.pileka.fitness_tracker_api.dto.auth.LoginDto;
 import org.pileka.fitness_tracker_api.dto.auth.TokenDto;
-import org.pileka.fitness_tracker_api.dto.auth.RegistrationRequest;
+import org.pileka.fitness_tracker_api.dto.auth.RegistrationDto;
 import org.pileka.fitness_tracker_api.service.AuthService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,13 +19,13 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity register(@RequestBody RegistrationRequest request) {
+    public ResponseEntity register(@RequestBody RegistrationDto request) {
         authService.register(request);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> authenticate(@RequestBody LoginRequest request) {
+    public ResponseEntity<TokenDto> authenticate(@RequestBody LoginDto request) {
         // Authenticate and return JWT
         return ResponseEntity.ok(authService.login(request));
     }

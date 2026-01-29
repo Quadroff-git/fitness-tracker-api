@@ -1,8 +1,8 @@
 package org.pileka.fitness_tracker_api.service;
 
-import org.pileka.fitness_tracker_api.dto.auth.LoginRequest;
+import org.pileka.fitness_tracker_api.dto.auth.LoginDto;
 import org.pileka.fitness_tracker_api.dto.auth.TokenDto;
-import org.pileka.fitness_tracker_api.dto.auth.RegistrationRequest;
+import org.pileka.fitness_tracker_api.dto.auth.RegistrationDto;
 
 /**
  * Authentication service class
@@ -14,7 +14,7 @@ public interface AuthService {
      * @param request values to create the new user with
      * @return true if registration is creation is successful
      */
-    boolean register(RegistrationRequest request);
+    boolean register(RegistrationDto request);
 
     /**
      * Login an existing user
@@ -22,5 +22,5 @@ public interface AuthService {
      * @param request existing user's credentials
      * @return a LoginResponse object with two valid JWT tokens
      */
-    TokenDto login(LoginRequest request);
+    TokenDto login(LoginDto request);
 }
