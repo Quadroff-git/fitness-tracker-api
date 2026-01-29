@@ -48,11 +48,7 @@ public class AuthServiceImpl implements org.pileka.fitness_tracker_api.service.A
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow();
 
-        // Generate and return JWT
-        String bearerToken = jwtTokenProvider.generateBearerToken(user.getUsername());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getUsername());
-
-        return new TokenDto(bearerToken, refreshToken);
+        return getTokenDto(user.getUsername());
     }
 
     @Override
@@ -60,14 +56,19 @@ public class AuthServiceImpl implements org.pileka.fitness_tracker_api.service.A
         if (jwtTokenProvider.tokenIsValid(refreshToken)) {
             String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
 
-            return new TokenDto(
-                    jwtTokenProvider.generateBearerToken(username),
-                    jwtTokenProvider.generateRefreshToken(username)
-            );
+            return getTokenDto(username);
         }
         else {
             // TODO probably throw an exception if a token is invalid
             return null;
         }
+    }
+
+    private TokenDto getTokenDto(String username) {
+        return new TokenDto(jwtTokenProvider.generateBearerToken(username),
+                jwtTokenProvider.getBearerTokenExpiration(),
+                jwtTokenProvider.generateRefreshToken(username),
+                jwtTokenProvider.getRefreshTokenExpiration()
+        );
     }
 }
