@@ -57,6 +57,17 @@ public class AuthServiceImpl implements org.pileka.fitness_tracker_api.service.A
 
     @Override
     public TokenDto refresh(String refreshToken) {
-        return null;
+        if (jwtTokenProvider.tokenIsValid(refreshToken)) {
+            String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
+
+            return new TokenDto(
+                    jwtTokenProvider.generateBearerToken(username),
+                    jwtTokenProvider.generateRefreshToken(username)
+            );
+        }
+        else {
+            // TODO probably throw an exception if a token is invalid
+            return null;
+        }
     }
 }
