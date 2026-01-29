@@ -5,7 +5,6 @@ import org.pileka.fitness_tracker_api.dto.auth.LoginRequest;
 import org.pileka.fitness_tracker_api.dto.auth.LoginResponse;
 import org.pileka.fitness_tracker_api.dto.auth.RegistrationRequest;
 import org.pileka.fitness_tracker_api.service.AuthService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
