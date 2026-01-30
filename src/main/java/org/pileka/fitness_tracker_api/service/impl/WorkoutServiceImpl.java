@@ -3,10 +3,12 @@ package org.pileka.fitness_tracker_api.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.pileka.fitness_tracker_api.domain.Workout;
+import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.ReadWorkoutDto;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.repository.WorkoutRepository;
+import org.pileka.fitness_tracker_api.repository.specification.WorkoutSpecs;
 import org.pileka.fitness_tracker_api.service.WorkoutService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -65,13 +67,43 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public List<ReadWorkoutDto> findAll(UserDetails userDetails, Optional<String> type, Optional<LocalDate> startDate, Optional<LocalDate> endDate, Optional<Integer> minDuration, Optional<Integer> maxDuration) {
-        return List.of();
+    public List<ReadWorkoutDto> findAll(UserDetails userDetails,
+                                        Optional<WorkoutType> type,
+                                        Optional<LocalDate> startDate,
+                                        Optional<LocalDate> endDate,
+                                        Optional<Integer> minDuration,
+                                        Optional<Integer> maxDuration) {
+        return workoutRepository.findAll(
+                WorkoutSpecs.getFullSpec(
+                    userRepository.findByUsername(userDetails.getUsername()).get(),
+                    type,
+                    startDate,
+                    endDate,
+                    minDuration,
+                    maxDuration
+                )
+        ).stream().map(workout -> modelMapper.map(workout, ReadWorkoutDto.class)).toList();
     }
 
     @Override
-    public Page<ReadWorkoutDto> findAll(UserDetails userDetails, Optional<String> type, Optional<LocalDate> startDate, Optional<LocalDate> endDate, Optional<Integer> minDuration, Optional<Integer> maxDuration, Pageable pageable) {
-        return null;
+    public Page<ReadWorkoutDto> findAll(UserDetails userDetails,
+                                        Optional<WorkoutType> type,
+                                        Optional<LocalDate> startDate,
+                                        Optional<LocalDate> endDate,
+                                        Optional<Integer> minDuration,
+                                        Optional<Integer> maxDuration,
+                                        Pageable pageable) {
+        return workoutRepository.findAll(
+                WorkoutSpecs.getFullSpec(
+                        userRepository.findByUsername(userDetails.getUsername()).get(),
+                        type,
+                        startDate,
+                        endDate,
+                        minDuration,
+                        maxDuration
+                ),
+                pageable
+        ).map(workout -> modelMapper.map(workout, ReadWorkoutDto.class));
     }
 
     @Override
