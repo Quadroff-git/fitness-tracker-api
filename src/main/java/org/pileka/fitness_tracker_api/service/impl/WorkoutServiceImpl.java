@@ -5,6 +5,7 @@ import org.modelmapper.ModelMapper;
 import org.pileka.fitness_tracker_api.domain.Workout;
 import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.ReadWorkoutDto;
+import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.repository.WorkoutRepository;
 import org.pileka.fitness_tracker_api.service.WorkoutService;
 import org.springframework.data.domain.Page;
@@ -20,11 +21,21 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class WorkoutServiceImpl implements WorkoutService {
     private final WorkoutRepository workoutRepository;
+    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
     @Override
     public ReadWorkoutDto create(CreateUpdateWorkoutDto createDto) {
-        return null;
+        throw new UnsupportedOperationException("Can't create a workout without user information");
+    }
+
+    @Override
+    public ReadWorkoutDto create(CreateUpdateWorkoutDto createDto, UserDetails userDetails) {
+        // Most of the mapping is done by ModelMapper, but User is injected manually
+        Workout newWorkout = modelMapper.map(createDto, Workout.class);
+        newWorkout.setUser(userRepository.findByUsername(userDetails.getUsername()).get());
+
+        return modelMapper.map(workoutRepository.save(newWorkout), ReadWorkoutDto.class);
     }
 
     @Override
