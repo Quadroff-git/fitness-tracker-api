@@ -2,7 +2,6 @@ package org.pileka.fitness_tracker_api.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.pileka.fitness_tracker_api.domain.User;
 import org.pileka.fitness_tracker_api.domain.Workout;
 import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.ReadWorkoutDto;
@@ -10,6 +9,7 @@ import org.pileka.fitness_tracker_api.repository.WorkoutRepository;
 import org.pileka.fitness_tracker_api.service.WorkoutService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -33,9 +33,9 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Optional<ReadWorkoutDto> findById(Long id, User user) {
+    public Optional<ReadWorkoutDto> findById(Long id, UserDetails userDetails) {
         Optional<Workout> workoutAtId = workoutRepository.findById(id);
-        if (workoutAtId.isPresent() && workoutAtId.get().getUser().equals(user)) {
+        if (workoutAtId.isPresent() && workoutAtId.get().getUser().equals(userDetails)) {
             return Optional.ofNullable(modelMapper.map(workoutAtId, ReadWorkoutDto.class));
         }
         else {
@@ -54,12 +54,12 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public List<ReadWorkoutDto> findAll(User user, Optional<String> type, Optional<LocalDate> startDate, Optional<LocalDate> endDate, Optional<Integer> minDuration, Optional<Integer> maxDuration) {
+    public List<ReadWorkoutDto> findAll(UserDetails userDetails, Optional<String> type, Optional<LocalDate> startDate, Optional<LocalDate> endDate, Optional<Integer> minDuration, Optional<Integer> maxDuration) {
         return List.of();
     }
 
     @Override
-    public Page<ReadWorkoutDto> findAll(User user, Optional<String> type, Optional<LocalDate> startDate, Optional<LocalDate> endDate, Optional<Integer> minDuration, Optional<Integer> maxDuration, Pageable pageable) {
+    public Page<ReadWorkoutDto> findAll(UserDetails userDetails, Optional<String> type, Optional<LocalDate> startDate, Optional<LocalDate> endDate, Optional<Integer> minDuration, Optional<Integer> maxDuration, Pageable pageable) {
         return null;
     }
 
@@ -69,9 +69,9 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Optional<ReadWorkoutDto> update(Long id, User user, CreateUpdateWorkoutDto updateDto) {
+    public Optional<ReadWorkoutDto> update(Long id, UserDetails userDetails, CreateUpdateWorkoutDto updateDto) {
         Optional<Workout> workoutAtId = workoutRepository.findById(id);
-        if (workoutAtId.isPresent() && workoutAtId.get().getUser().equals(user)) {
+        if (workoutAtId.isPresent() && workoutAtId.get().getUser().equals(userDetails)) {
             Workout workout = workoutAtId.get();
 
             workout.setName(updateDto.getName());
@@ -107,9 +107,9 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Optional<ReadWorkoutDto> delete(Long id, User user) {
+    public Optional<ReadWorkoutDto> delete(Long id, UserDetails userDetails) {
         Optional<Workout> optionalWorkout = workoutRepository.findById(id);
-        if (optionalWorkout.isPresent() && optionalWorkout.get().getUser().equals(user)) {
+        if (optionalWorkout.isPresent() && optionalWorkout.get().getUser().equals(userDetails)) {
             workoutRepository.delete(optionalWorkout.get());
 
             return Optional.ofNullable(modelMapper.map(optionalWorkout, ReadWorkoutDto.class));
