@@ -1,5 +1,7 @@
 package org.pileka.fitness_tracker_api.service;
 
+import org.pileka.fitness_tracker_api.domain.Workout;
+import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.ReadWorkoutDto;
 import org.springframework.data.domain.Page;
@@ -44,7 +46,7 @@ public interface WorkoutService extends BaseService<ReadWorkoutDto, CreateUpdate
      */
     // Using Optional in parameters because that's what we get from the request in the controllers
     public List<ReadWorkoutDto> findAll(UserDetails userDetails,
-                                        Optional<String> type,
+                                        Optional<WorkoutType> type,
                                         Optional<LocalDate> startDate,
                                         Optional<LocalDate> endDate,
                                         Optional<Integer> minDuration,
@@ -63,7 +65,7 @@ public interface WorkoutService extends BaseService<ReadWorkoutDto, CreateUpdate
      * @return Page of workout DTOs that fit the filters
      */
     Page<ReadWorkoutDto> findAll(UserDetails userDetails,
-                                        Optional<String> type,
+                                        Optional<WorkoutType> type,
                                         Optional<LocalDate> startDate,
                                         Optional<LocalDate> endDate,
                                         Optional<Integer> minDuration,
