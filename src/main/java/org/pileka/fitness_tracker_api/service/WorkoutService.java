@@ -14,12 +14,13 @@ public interface WorkoutService extends BaseService<ReadWorkoutDto, CreateUpdate
 
     /**
      * Get user's workout by id
+     *
      * @param id workout id
      * @param user user entity to whom the workout must belong
      * @return workout DTO or null wrapped in Optional if no workout
      * with this id belonging to this user is found
      * */
-    public Optional<ReadWorkoutDto> getById(Long id, User user);
+    public Optional<ReadWorkoutDto> findById(Long id, User user);
 
     /**
      * Get user's workouts, optionally according to some filters
@@ -33,7 +34,7 @@ public interface WorkoutService extends BaseService<ReadWorkoutDto, CreateUpdate
      * @return List of workout DTOs that fit the filters
      */
     // Using Optional in parameters because that's what we get from the request in the controllers
-    public List<ReadWorkoutDto> getAll(User user,
+    public List<ReadWorkoutDto> findAll(User user,
                                                Optional<String> type,
                                                Optional<LocalDate> startDate,
                                                Optional<LocalDate> endDate,
@@ -52,7 +53,7 @@ public interface WorkoutService extends BaseService<ReadWorkoutDto, CreateUpdate
      * @param pageable pagination configuration
      * @return Page of workout DTOs that fit the filters
      */
-    Page<ReadWorkoutDto> getAll(User user,
+    Page<ReadWorkoutDto> findAll(User user,
                                         Optional<String> type,
                                         Optional<LocalDate> startDate,
                                         Optional<LocalDate> endDate,
