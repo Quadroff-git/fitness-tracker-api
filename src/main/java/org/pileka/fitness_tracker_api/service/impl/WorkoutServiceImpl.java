@@ -4,8 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.pileka.fitness_tracker_api.domain.User;
 import org.pileka.fitness_tracker_api.domain.Workout;
-import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
+import org.pileka.fitness_tracker_api.dto.workout.CreateWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.ReadWorkoutDto;
+import org.pileka.fitness_tracker_api.dto.workout.UpdateWorkoutDto;
 import org.pileka.fitness_tracker_api.repository.WorkoutRepository;
 import org.pileka.fitness_tracker_api.service.WorkoutService;
 import org.springframework.data.domain.Page;
@@ -23,7 +24,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     private final ModelMapper modelMapper;
 
     @Override
-    public ReadWorkoutDto create(CreateUpdateWorkoutDto createDto) {
+    public ReadWorkoutDto create(CreateWorkoutDto createDto) {
         return null;
     }
 
@@ -69,7 +70,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Optional<ReadWorkoutDto> update(Long id, User user, CreateUpdateWorkoutDto updateDto) {
+    public Optional<ReadWorkoutDto> update(Long id, User user, UpdateWorkoutDto updateDto) {
         Optional<Workout> workoutAtId = workoutRepository.findById(id);
         if (workoutAtId.isPresent() && workoutAtId.get().getUser().equals(user)) {
             Workout workout = workoutAtId.get();
@@ -88,7 +89,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Optional<ReadWorkoutDto> update(Long id, CreateUpdateWorkoutDto updateDto) {
+    public Optional<ReadWorkoutDto> update(Long id, UpdateWorkoutDto updateDto) {
         Optional<Workout> workoutAtId = workoutRepository.findById(id);
         if (workoutAtId.isPresent()) {
             Workout workout = workoutAtId.get();
