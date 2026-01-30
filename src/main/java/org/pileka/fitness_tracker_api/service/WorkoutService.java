@@ -1,9 +1,8 @@
 package org.pileka.fitness_tracker_api.service;
 
 import org.pileka.fitness_tracker_api.domain.User;
-import org.pileka.fitness_tracker_api.dto.workout.CreateWorkoutDto;
+import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.ReadWorkoutDto;
-import org.pileka.fitness_tracker_api.dto.workout.UpdateWorkoutDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -11,7 +10,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface WorkoutService extends BaseService<ReadWorkoutDto, CreateWorkoutDto, UpdateWorkoutDto, Long> {
+public interface WorkoutService extends BaseService<ReadWorkoutDto, CreateUpdateWorkoutDto, CreateUpdateWorkoutDto, Long> {
 
     /**
      * Get user's workout by id
@@ -71,7 +70,7 @@ public interface WorkoutService extends BaseService<ReadWorkoutDto, CreateWorkou
      * @return updated workout DTO or null wrapped in Optional if no workout
      * with this id belonging to this user is found
      * */
-    Optional<ReadWorkoutDto> update(Long id, User user, UpdateWorkoutDto updateDto);
+    Optional<ReadWorkoutDto> update(Long id, User user, CreateUpdateWorkoutDto updateDto);
 
     /**
      * Delete user's workout by id

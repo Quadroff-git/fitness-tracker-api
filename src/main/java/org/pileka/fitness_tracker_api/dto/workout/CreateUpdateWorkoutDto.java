@@ -11,7 +11,7 @@ import java.time.LocalDate;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UpdateWorkoutDto {
+public class CreateUpdateWorkoutDto {
     @NotBlank(message = "Workout name is required")
     @Size(max = 100, message = "Workout name must be less than or equal to 100 characters")
     private String name;
