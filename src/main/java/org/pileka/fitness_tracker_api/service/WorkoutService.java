@@ -13,6 +13,15 @@ import java.util.Optional;
 public interface WorkoutService extends BaseService<ReadWorkoutDto, CreateUpdateWorkoutDto, CreateUpdateWorkoutDto, Long> {
 
     /**
+     * Create a new workout belonging to user
+     *
+     * @param createDto DTO containing values for the new workout
+     * @param userDetails security credentials of the user to whom the workout will belong
+     * @return A DTO representing the newly created workout
+     */
+    ReadWorkoutDto create(CreateUpdateWorkoutDto createDto, UserDetails userDetails);
+
+    /**
      * Get user's workout by id
      *
      * @param id workout id
