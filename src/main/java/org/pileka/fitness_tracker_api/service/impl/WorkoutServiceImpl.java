@@ -111,6 +111,7 @@ public class WorkoutServiceImpl implements WorkoutService {
         return workoutRepository.existsById(id);
     }
 
+    // doesn't work
     @Override
     public Optional<ReadWorkoutDto> update(Long id, UserDetails userDetails, CreateUpdateWorkoutDto updateDto) {
         Optional<Workout> workoutAtId = workoutRepository.findById(id);
@@ -122,6 +123,8 @@ public class WorkoutServiceImpl implements WorkoutService {
             workout.setDate(updateDto.getDate());
             workout.setDuration(updateDto.getDuration());
             workout.setCalories(updateDto.getCalories());
+
+            workoutRepository.save(workout);
 
             return Optional.ofNullable(modelMapper.map(workout, ReadWorkoutDto.class));
         }
@@ -141,6 +144,8 @@ public class WorkoutServiceImpl implements WorkoutService {
             workout.setDate(updateDto.getDate());
             workout.setDuration(updateDto.getDuration());
             workout.setCalories(updateDto.getCalories());
+
+            workoutRepository.save(workout);
 
             return Optional.ofNullable(modelMapper.map(workout, ReadWorkoutDto.class));
         }
