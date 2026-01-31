@@ -8,11 +8,13 @@ import org.pileka.fitness_tracker_api.dto.auth.TokenDto;
 import org.pileka.fitness_tracker_api.dto.auth.RegistrationDto;
 import org.pileka.fitness_tracker_api.exception.EntityRestrictionViolationException;
 import org.pileka.fitness_tracker_api.exception.RefreshTokenInvalidException;
+import org.pileka.fitness_tracker_api.exception.UserLoginFailedException;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.security.JwtTokenProvider;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -43,12 +45,16 @@ public class AuthServiceImpl implements org.pileka.fitness_tracker_api.service.A
 
     @Override
     public TokenDto login(LoginDto request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getUsername(),
-                        request.getPassword()
-                )
-        );
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getUsername(),
+                            request.getPassword()
+                    )
+            );
+        } catch (AuthenticationException e) {
+            throw new UserLoginFailedException(e);
+        }
 
         // If we get here, credentials are valid
         User user = userRepository.findByUsername(request.getUsername())
