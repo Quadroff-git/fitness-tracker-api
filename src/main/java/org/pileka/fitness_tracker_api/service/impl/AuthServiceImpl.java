@@ -44,7 +44,7 @@ public class AuthServiceImpl implements org.pileka.fitness_tracker_api.service.A
     }
 
     @Override
-    public TokenDto login(LoginDto request) {
+    public TokenDto login(LoginDto request) throws UserLoginFailedException  {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
