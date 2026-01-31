@@ -1,12 +1,15 @@
 package org.pileka.fitness_tracker_api.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.hibernate.query.sqm.EntityTypeException;
 import org.pileka.fitness_tracker_api.domain.User;
 import org.pileka.fitness_tracker_api.dto.auth.LoginDto;
 import org.pileka.fitness_tracker_api.dto.auth.TokenDto;
 import org.pileka.fitness_tracker_api.dto.auth.RegistrationDto;
+import org.pileka.fitness_tracker_api.exception.EntityRestrictionViolationException;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.security.JwtTokenProvider;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -22,7 +25,7 @@ public class AuthServiceImpl implements org.pileka.fitness_tracker_api.service.A
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public void register(RegistrationDto request) {
+    public void register(RegistrationDto request) throws EntityRestrictionViolationException {
         // Mapping manually here because the passwords aren't encoded in the DTO,
         // and if you have to encrypt and inject it manually why even bother?
         User user = User.builder()
@@ -30,8 +33,11 @@ public class AuthServiceImpl implements org.pileka.fitness_tracker_api.service.A
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();
-
-        userRepository.save(user);
+        try {
+            userRepository.save(user);
+        } catch (DataIntegrityViolationException e) {
+            throw new EntityRestrictionViolationException(e);
+        }
     }
 
     @Override

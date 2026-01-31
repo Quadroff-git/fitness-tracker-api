@@ -3,6 +3,7 @@ package org.pileka.fitness_tracker_api.service;
 import org.pileka.fitness_tracker_api.dto.auth.LoginDto;
 import org.pileka.fitness_tracker_api.dto.auth.TokenDto;
 import org.pileka.fitness_tracker_api.dto.auth.RegistrationDto;
+import org.pileka.fitness_tracker_api.exception.EntityRestrictionViolationException;
 
 /**
  * Authentication service class
@@ -13,8 +14,10 @@ public interface AuthService {
      *
      * @param request values to create the new user with
      * @return true if registration is creation is successful
+     * @throws EntityRestrictionViolationException if any entity restrictions are violated
+     * (typically related to value uniqueness)
      */
-    void register(RegistrationDto request);
+    void register(RegistrationDto request) throws EntityRestrictionViolationException;
 
     /**
      * Login an existing user
