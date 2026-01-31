@@ -14,7 +14,7 @@ public interface AuthService {
      * @param request values to create the new user with
      * @return true if registration is creation is successful
      */
-    boolean register(RegistrationDto request);
+    void register(RegistrationDto request);
 
     /**
      * Login an existing user

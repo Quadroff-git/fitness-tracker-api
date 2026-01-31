@@ -22,21 +22,20 @@ public class AuthServiceImpl implements org.pileka.fitness_tracker_api.service.A
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public boolean register(RegistrationDto request) {
-        // Create new user with encoded password
-        var user = User.builder()
+    public void register(RegistrationDto request) {
+        // Mapping manually here because the passwords aren't encoded in the DTO,
+        // and if you have to encrypt and inject it manually why even bother?
+        User user = User.builder()
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .build();
 
         userRepository.save(user);
-        return true;
     }
 
     @Override
     public TokenDto login(LoginDto request) {
-        // Let Spring Security validate credentials
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
