@@ -6,6 +6,7 @@ import org.pileka.fitness_tracker_api.domain.Workout;
 import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.ReadWorkoutDto;
+import org.pileka.fitness_tracker_api.exception.EntityDoesntBelongToUserException;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.repository.WorkoutRepository;
 import org.pileka.fitness_tracker_api.repository.specification.WorkoutSpecs;
@@ -48,8 +49,14 @@ public class WorkoutServiceImpl implements WorkoutService {
     @Override
     public Optional<ReadWorkoutDto> findById(Long id, UserDetails userDetails) {
         Optional<Workout> workoutAtId = workoutRepository.findById(id);
-        if (workoutAtId.isPresent() && workoutAtId.get().getUser().equals(userDetails)) {
-            return Optional.ofNullable(modelMapper.map(workoutAtId, ReadWorkoutDto.class));
+        if (workoutAtId.isPresent()) {
+            if (workoutAtId.get().getUser().equals(userDetails)) {
+                return Optional.ofNullable(modelMapper.map(workoutAtId, ReadWorkoutDto.class));
+            }
+            else {
+                throw new EntityDoesntBelongToUserException("User " + userDetails.getUsername() +
+                        " attempted accessing a workout with id " + id + " that doesn't belong to them");
+            }
         }
         else {
             return Optional.empty();
@@ -115,18 +122,24 @@ public class WorkoutServiceImpl implements WorkoutService {
     @Override
     public Optional<ReadWorkoutDto> update(Long id, UserDetails userDetails, CreateUpdateWorkoutDto updateDto) {
         Optional<Workout> workoutAtId = workoutRepository.findById(id);
-        if (workoutAtId.isPresent() && workoutAtId.get().getUser().equals(userDetails)) {
-            Workout workout = workoutAtId.get();
+        if (workoutAtId.isPresent()) {
+            if (workoutAtId.get().getUser().equals(userDetails)) {
+                Workout workout = workoutAtId.get();
 
-            workout.setName(updateDto.getName());
-            workout.setType(updateDto.getType());
-            workout.setDate(updateDto.getDate());
-            workout.setDuration(updateDto.getDuration());
-            workout.setCalories(updateDto.getCalories());
+                workout.setName(updateDto.getName());
+                workout.setType(updateDto.getType());
+                workout.setDate(updateDto.getDate());
+                workout.setDuration(updateDto.getDuration());
+                workout.setCalories(updateDto.getCalories());
 
-            workoutRepository.save(workout);
+                workoutRepository.save(workout);
 
-            return Optional.ofNullable(modelMapper.map(workout, ReadWorkoutDto.class));
+                return Optional.ofNullable(modelMapper.map(workout, ReadWorkoutDto.class));
+            }
+            else {
+                throw new EntityDoesntBelongToUserException("User " + userDetails.getUsername() +
+                        " attempted updating a workout with id " + id + " that doesn't belong to them");
+            }
         }
         else {
             return Optional.empty();
@@ -157,13 +170,19 @@ public class WorkoutServiceImpl implements WorkoutService {
     @Override
     public Optional<ReadWorkoutDto> delete(Long id, UserDetails userDetails) {
         Optional<Workout> optionalWorkout = workoutRepository.findById(id);
-        if (optionalWorkout.isPresent() && optionalWorkout.get().getUser().equals(userDetails)) {
-            workoutRepository.delete(optionalWorkout.get());
-
-            return Optional.ofNullable(modelMapper.map(optionalWorkout, ReadWorkoutDto.class));
+        if (optionalWorkout.isPresent()) {
+            if (optionalWorkout.get().getUser().equals(userDetails)){
+                workoutRepository.delete(optionalWorkout.get());
+                return Optional.ofNullable(modelMapper.map(optionalWorkout, ReadWorkoutDto.class));
+            }
+            else {
+                throw new EntityDoesntBelongToUserException("User " + userDetails.getUsername() +
+                        " attempted deleting a workout with id " + id + " that doesn't belong to them");
+            }
         }
-
-        return Optional.empty();
+        else {
+            return Optional.empty();
+        }
     }
 
     @Override
