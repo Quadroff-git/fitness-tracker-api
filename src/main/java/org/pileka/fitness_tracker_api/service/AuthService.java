@@ -4,6 +4,7 @@ import org.pileka.fitness_tracker_api.dto.auth.LoginDto;
 import org.pileka.fitness_tracker_api.dto.auth.TokenDto;
 import org.pileka.fitness_tracker_api.dto.auth.RegistrationDto;
 import org.pileka.fitness_tracker_api.exception.EntityRestrictionViolationException;
+import org.pileka.fitness_tracker_api.exception.RefreshTokenInvalidException;
 
 /**
  * Authentication service class
@@ -14,7 +15,7 @@ public interface AuthService {
      *
      * @param request values to create the new user with
      * @return true if registration is creation is successful
-     * @throws EntityRestrictionViolationException if any entity restrictions are violated
+     * @throws EntityRestrictionViolationException Thrown when any restrictions associated with user information are violated
      * (typically related to value uniqueness)
      */
     void register(RegistrationDto request) throws EntityRestrictionViolationException;
@@ -32,6 +33,7 @@ public interface AuthService {
      *
      * @param refreshToken refresh token
      * @return a TokenDto object with two fresh tokens
+     * @throws RefreshTokenInvalidException Thrown when an invalid refresh token is supplied
      */
-    TokenDto refresh(String refreshToken);
+    TokenDto refresh(String refreshToken) throws RefreshTokenInvalidException;
 }

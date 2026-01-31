@@ -7,6 +7,7 @@ import org.pileka.fitness_tracker_api.dto.auth.LoginDto;
 import org.pileka.fitness_tracker_api.dto.auth.TokenDto;
 import org.pileka.fitness_tracker_api.dto.auth.RegistrationDto;
 import org.pileka.fitness_tracker_api.exception.EntityRestrictionViolationException;
+import org.pileka.fitness_tracker_api.exception.RefreshTokenInvalidException;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.security.JwtTokenProvider;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -57,15 +58,14 @@ public class AuthServiceImpl implements org.pileka.fitness_tracker_api.service.A
     }
 
     @Override
-    public TokenDto refresh(String refreshToken) {
+    public TokenDto refresh(String refreshToken) throws RefreshTokenInvalidException {
         if (jwtTokenProvider.tokenIsValid(refreshToken)) {
             String username = jwtTokenProvider.getUsernameFromToken(refreshToken);
 
             return getTokenDto(username);
         }
         else {
-            // TODO probably throw an exception if a token is invalid
-            return null;
+            throw new RefreshTokenInvalidException("Token refreshing with an invalid refresh token was attempted");
         }
     }
 
