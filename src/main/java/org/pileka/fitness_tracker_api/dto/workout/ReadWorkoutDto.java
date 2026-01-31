@@ -1,6 +1,7 @@
 package org.pileka.fitness_tracker_api.dto.workout;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.pileka.fitness_tracker_api.domain.WorkoutType;
@@ -8,6 +9,7 @@ import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import java.time.LocalDate;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReadWorkoutDto {
