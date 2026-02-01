@@ -1,6 +1,5 @@
 package org.pileka.fitness_tracker_api.service.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.pileka.fitness_tracker_api.domain.Workout;
 import org.pileka.fitness_tracker_api.domain.WorkoutType;
@@ -116,7 +115,7 @@ public class WorkoutServiceImpl extends BaseServiceImpl<Workout, ReadWorkoutDto,
                 workout.setDuration(updateDto.getDuration());
                 workout.setCalories(updateDto.getCalories());
 
-                workoutRepository.save(workout);
+                workout = workoutRepository.save(workout);
 
                 return Optional.ofNullable(modelMapper.map(workout, ReadWorkoutDto.class));
             }
@@ -142,7 +141,7 @@ public class WorkoutServiceImpl extends BaseServiceImpl<Workout, ReadWorkoutDto,
             workout.setDuration(updateDto.getDuration());
             workout.setCalories(updateDto.getCalories());
 
-            workoutRepository.save(workout);
+            workout = workoutRepository.save(workout);
 
             return Optional.ofNullable(modelMapper.map(workout, ReadWorkoutDto.class));
         }
