@@ -1,12 +1,18 @@
 package org.pileka.fitness_tracker_api.domain;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotEmpty;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "media")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Media {
+    @NotEmpty()
     @Column(nullable = false, columnDefinition = "BYTEA")
     private byte[] image;
 
