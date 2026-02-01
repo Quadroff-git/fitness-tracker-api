@@ -21,11 +21,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
-public class WorkoutServiceImpl implements WorkoutService {
+public class WorkoutServiceImpl extends BaseServiceImpl<Workout, ReadWorkoutDto, CreateUpdateWorkoutDto, CreateUpdateWorkoutDto, Long> implements WorkoutService {
     private final WorkoutRepository workoutRepository;
     private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
+
+    public WorkoutServiceImpl(WorkoutRepository workoutRepository, UserRepository userRepository, ModelMapper modelMapper) {
+        super(workoutRepository, modelMapper);
+
+        this.workoutRepository = workoutRepository;
+        this.userRepository = userRepository;
+    }
 
     @Override
     public ReadWorkoutDto create(CreateUpdateWorkoutDto createDto) {
@@ -39,11 +44,6 @@ public class WorkoutServiceImpl implements WorkoutService {
         newWorkout.setUser(userRepository.findByUsername(userDetails.getUsername()).get());
 
         return modelMapper.map(workoutRepository.save(newWorkout), ReadWorkoutDto.class);
-    }
-
-    @Override
-    public Optional<ReadWorkoutDto> findById(Long id) {
-        return Optional.ofNullable(modelMapper.map(workoutRepository.findById(id), ReadWorkoutDto.class));
     }
 
     @Override
@@ -61,16 +61,6 @@ public class WorkoutServiceImpl implements WorkoutService {
         else {
             return Optional.empty();
         }
-    }
-
-    @Override
-    public List<ReadWorkoutDto> findAll() {
-        return workoutRepository.findAll().stream().map(workout -> modelMapper.map(workout, ReadWorkoutDto.class)).toList();
-    }
-
-    @Override
-    public Page<ReadWorkoutDto> findAll(Pageable pageable) {
-        return workoutRepository.findAll(pageable).map(workout -> modelMapper.map(workout, ReadWorkoutDto.class));
     }
 
     @Override
@@ -113,12 +103,6 @@ public class WorkoutServiceImpl implements WorkoutService {
         ).map(workout -> modelMapper.map(workout, ReadWorkoutDto.class));
     }
 
-    @Override
-    public boolean existsById(Long id) {
-        return workoutRepository.existsById(id);
-    }
-
-    // doesn't work
     @Override
     public Optional<ReadWorkoutDto> update(Long id, UserDetails userDetails, CreateUpdateWorkoutDto updateDto) {
         Optional<Workout> workoutAtId = workoutRepository.findById(id);
@@ -183,17 +167,5 @@ public class WorkoutServiceImpl implements WorkoutService {
         else {
             return Optional.empty();
         }
-    }
-
-    @Override
-    public Optional<ReadWorkoutDto> delete(Long id) {
-        Optional<Workout> optionalWorkout = workoutRepository.findById(id);
-        if (optionalWorkout.isPresent()) {
-            workoutRepository.delete(optionalWorkout.get());
-
-            return Optional.ofNullable(modelMapper.map(optionalWorkout, ReadWorkoutDto.class));
-        }
-
-        return Optional.empty();
     }
 }

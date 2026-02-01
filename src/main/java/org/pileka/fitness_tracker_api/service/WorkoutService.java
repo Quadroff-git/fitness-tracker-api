@@ -12,7 +12,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface WorkoutService extends BaseService<ReadWorkoutDto, CreateUpdateWorkoutDto, CreateUpdateWorkoutDto, Long> {
+public interface WorkoutService extends BaseService<Workout, ReadWorkoutDto, CreateUpdateWorkoutDto, CreateUpdateWorkoutDto, Long> {
 
     /**
      * Create a new workout belonging to user
