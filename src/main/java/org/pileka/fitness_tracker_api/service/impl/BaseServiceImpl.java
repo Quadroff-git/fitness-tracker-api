@@ -5,21 +5,10 @@ import org.pileka.fitness_tracker_api.repository.BaseRepository;
 import org.springframework.core.GenericTypeResolver;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-/**
- * Base service interface with CRUD operations
- *
- * @param <T> Entity class
- * @param <R> DTO class for reading
- * @param <C> DTO class for creating
- * @param <U> DTO class for updating
- * @param <ID> Identifier class
- */
-@Service
 public abstract class BaseServiceImpl<T, R, C, U, ID> implements org.pileka.fitness_tracker_api.service.BaseService<T, R, C, U, ID> {
 
     private final BaseRepository<T, ID> repository;
