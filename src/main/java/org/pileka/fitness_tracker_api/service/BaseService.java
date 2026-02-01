@@ -6,6 +6,15 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Base service interface with CRUD operations
+ *
+ * @param <T> Entity class
+ * @param <R> DTO class for reading
+ * @param <C> DTO class for creating
+ * @param <U> DTO class for updating
+ * @param <ID> Identifier class
+ */
 public interface BaseService<T, R, C, U, ID> {
     /**
      * Create a new entity
