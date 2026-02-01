@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MediaDto {
-    @NotEmpty
+    @NotEmpty(message="image cannot be empty")
     private byte[] image;
 }
