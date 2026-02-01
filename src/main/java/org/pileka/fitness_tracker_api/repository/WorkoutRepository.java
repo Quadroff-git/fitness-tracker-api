@@ -9,7 +9,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 
 import java.util.List;
 
-public interface WorkoutRepository extends ListCrudRepository<Workout, Long>, PagingAndSortingRepository<Workout, Long>, JpaSpecificationExecutor<Workout> {
+public interface WorkoutRepository extends BaseRepository<Workout, Long>, JpaSpecificationExecutor<Workout> {
     List<Workout> findByUser(User user);
     List<Workout> findByUser(User user, Pageable pageable);
 }
