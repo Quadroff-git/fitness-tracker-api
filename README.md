@@ -20,8 +20,8 @@ Base level interfaces and implementations were extracted wherever feasible
 - GitFlow workflow used as much as possible (most feature branches were local and shortlived and there have been no 
 releases yet, so there isn't much to back that up)
 - Conventional Commits specification followed
+- Docker containerization
 
 Things that are not done yet:
 - Test coverage is not sufficient and the implemented tests require some refinement (mostly done though!)
 - Swagger (OpenAPI) documentation generation not set up
-- Docker containerization
