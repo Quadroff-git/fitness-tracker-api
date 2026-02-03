@@ -3,25 +3,30 @@ package org.pileka.fitness_tracker_api.exception.handler;
 import org.pileka.fitness_tracker_api.exception.EntityDoesntBelongToUserException;
 import org.pileka.fitness_tracker_api.exception.EntityRestrictionViolationException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
 import java.util.HashMap;
 import java.util.Map;
 
 @ControllerAdvice
 public class CommonAdvice {
+    @ResponseStatus(code = HttpStatus.NOT_FOUND)
     @ExceptionHandler(EntityDoesntBelongToUserException.class)
     public ResponseEntity<String> handleEntityDoesntBelongToUser() {
-        // Potentially log this since it might be done on purporse
+        // Potentially log this since it might be done on purpose
         return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public ResponseEntity<String> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
         Map<String, String> errorInfo = new HashMap<>();
 
@@ -35,19 +40,27 @@ public class CommonAdvice {
         return ResponseEntity.badRequest().body(errorInfo.toString());
     }
 
-    @ExceptionHandler({EntityRestrictionViolationException.class,
-            HttpMessageNotReadableException.class,})
-    public ResponseEntity<String> handleGenericBadRequest(EntityRestrictionViolationException e) {
-        return ResponseEntity.badRequest().body(e.getMessage());
+    @ExceptionHandler(EntityRestrictionViolationException.class)
+    @ResponseStatus(code = HttpStatus.CONFLICT)
+    public ErrorResponse handleConflict(EntityRestrictionViolationException e) {
+        return ErrorResponse.create(e, HttpStatus.CONFLICT, "Data integrity conflict");
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleGenericBadRequest(HttpMessageNotReadableException e) {
+        return ErrorResponse.create(e, HttpStatus.BAD_REQUEST, "Bad request");
     }
 
     @ExceptionHandler(DataAccessException.class)
-    public ResponseEntity<String> handleDataAccessException(DataAccessException e) {
-        return ResponseEntity.internalServerError().body("Something went wrong when accessing the database:\n" + e.getMessage());
+    @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleDataAccessException(DataAccessException e) {
+        return ErrorResponse.create(e, HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong while accessing the database");
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<String> handleGenericInternalError(RuntimeException e) {
-        return ResponseEntity.internalServerError().body("Unexpected error happened:\n" + e.getMessage());
+    @ResponseStatus(code= HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorResponse handleGenericInternalError(RuntimeException e) {
+        return ErrorResponse.create(e, HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error happened");
     }
 }

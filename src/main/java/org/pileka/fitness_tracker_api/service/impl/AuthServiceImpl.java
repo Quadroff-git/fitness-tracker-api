@@ -1,9 +1,8 @@
 package org.pileka.fitness_tracker_api.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.hibernate.query.sqm.EntityTypeException;
 import org.pileka.fitness_tracker_api.domain.User;
-import org.pileka.fitness_tracker_api.dto.auth.LoginDto;
+import org.pileka.fitness_tracker_api.dto.auth.LoginRequestDto;
 import org.pileka.fitness_tracker_api.dto.auth.TokenDto;
 import org.pileka.fitness_tracker_api.dto.auth.RegistrationDto;
 import org.pileka.fitness_tracker_api.exception.EntityRestrictionViolationException;
@@ -44,7 +43,7 @@ public class AuthServiceImpl implements org.pileka.fitness_tracker_api.service.A
     }
 
     @Override
-    public TokenDto login(LoginDto request) throws UserLoginFailedException  {
+    public TokenDto login(LoginRequestDto request) throws UserLoginFailedException  {
         try {
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(

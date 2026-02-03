@@ -1,5 +1,7 @@
 package org.pileka.fitness_tracker_api.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.pileka.fitness_tracker_api.dto.media.MediaDto;
 import org.pileka.fitness_tracker_api.service.MediaService;
@@ -17,7 +19,12 @@ import java.io.IOException;
 public class MediaController {
     private final MediaService mediaService;
 
-    @PostMapping
+    @PostMapping(produces = "plain/text", consumes="multipart/form-data")
+    @Operation(summary = "Upload media",
+            tags = {"media"},
+            description = "Adds new media associated with the user",
+            responses = {@ApiResponse(description = "Success message")}
+    )
     ResponseEntity<String> addMedia(@AuthenticationPrincipal UserDetails userDetails, @RequestParam MultipartFile image) {
         if (image.getContentType() == null || !image.getContentType().startsWith("image/")) {
             return ResponseEntity.badRequest().body("Only image uploading is allowed");
