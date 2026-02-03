@@ -30,7 +30,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/api/auth/**").permitAll() // only auth requests are permitted without authorisation for now
+                    .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                     .anyRequest().authenticated()
                 )
 
