@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.pileka.fitness_tracker_api.domain.User;
-import org.pileka.fitness_tracker_api.dto.auth.LoginDto;
+import org.pileka.fitness_tracker_api.dto.auth.LoginRequestDto;
 import org.pileka.fitness_tracker_api.dto.auth.RegistrationDto;
 import org.pileka.fitness_tracker_api.dto.auth.TokenDto;
 import org.pileka.fitness_tracker_api.exception.EntityRestrictionViolationException;
@@ -14,10 +14,7 @@ import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.security.JwtTokenProvider;
 import org.pileka.fitness_tracker_api.service.impl.AuthServiceImpl;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.authentication.AccountStatusException;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationServiceException;
-import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,7 +41,7 @@ public class AuthServiceImplTest {
 
     PasswordEncoder passwordEncoder;
 
-    private LoginDto loginDto;
+    private LoginRequestDto loginRequestDto;
     private RegistrationDto registrationDto;
     private TokenDto tokenDto;
     private User user;
@@ -69,7 +66,7 @@ public class AuthServiceImplTest {
 
     @BeforeEach
     void setUpTestEntities() {
-        this.loginDto = new LoginDto(USERNAME, PASSWORD);
+        this.loginRequestDto = new LoginRequestDto(USERNAME, PASSWORD);
         this.registrationDto = new RegistrationDto(USERNAME, PASSWORD, "cool@email.com");
         this.tokenDto = new TokenDto(BEARER_TOKEN, BEARER_TOKEN_EXPIRATION, REFRESH_TOKEN, REFRESH_TOKEN_EXPIRATION);
 
@@ -121,7 +118,7 @@ public class AuthServiceImplTest {
         when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.ofNullable(User.builder().username(USERNAME).password(PASSWORD).build()));
         setUpFullTokenDtoMock();
 
-        TokenDto result = authService.login(loginDto);
+        TokenDto result = authService.login(loginRequestDto);
 
         assertEquals(tokenDto, result);
 
@@ -137,7 +134,7 @@ public class AuthServiceImplTest {
             throw new AuthenticationException("") {}; // An anonymous instance of AuthenticationException
         });
 
-        assertThrows(UserLoginFailedException.class, () -> authService.login(loginDto));
+        assertThrows(UserLoginFailedException.class, () -> authService.login(loginRequestDto));
 
         verify(userRepository, never()).findByUsername(USERNAME);
 

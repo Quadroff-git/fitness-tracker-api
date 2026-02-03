@@ -1,5 +1,7 @@
 package org.pileka.fitness_tracker_api.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.pileka.fitness_tracker_api.domain.WorkoutType;
@@ -25,7 +27,12 @@ public class WorkoutController {
 
     private final WorkoutService workoutService;
 
-    @GetMapping
+    @GetMapping(produces = "application/json")
+    @Operation(summary = "Get user's workouts",
+            tags = {"workouts"},
+            description = "Returns user's workouts with filtering by type, date and duration intervals, sorting and pagination",
+            responses = {@ApiResponse(description = "Workouts")}
+    )
     Page<ReadWorkoutDto> getWorkouts(@AuthenticationPrincipal UserDetails userDetails,
                                      @RequestParam Optional<WorkoutType> type,
                                      @RequestParam Optional<LocalDate> startDate,
@@ -42,7 +49,14 @@ public class WorkoutController {
                 pageable);
     }
 
-    @GetMapping(path = "/{id}")
+    @GetMapping(path = "/{id}", produces = "application/json")
+    @Operation(summary = "Get user's workout by id",
+            tags = {"workouts"},
+            description = "Returns user's workout with specified id if one exists",
+            responses = {
+                @ApiResponse(description = "The workout"),
+                @ApiResponse(responseCode = "404", description = "Workout not found")}
+    )
     ResponseEntity<ReadWorkoutDto> getWorkoutById(@AuthenticationPrincipal UserDetails userDetails,
                                                   @PathVariable Long id) {
         Optional<ReadWorkoutDto> workout = workoutService.findById(id, userDetails);
@@ -54,13 +68,27 @@ public class WorkoutController {
         }
     }
 
-    @PostMapping
+    @PostMapping(produces = "application/json")
+    @Operation(summary = "Add workout",
+            tags = {"workouts"},
+            description = "Adds a new workout associated with the user and returns a representation of the " +
+                    "newly created workout",
+            responses = {@ApiResponse(description = "The created workout")}
+    )
     ReadWorkoutDto addWorkout(@AuthenticationPrincipal UserDetails userDetails,
                               @Valid @RequestBody CreateUpdateWorkoutDto createDto) {
         return workoutService.create(createDto, userDetails);
     }
 
-    @PutMapping(path = "/{id}")
+    @PutMapping(path = "/{id}", produces = "application/json")
+    @Operation(summary = "Update workout",
+            tags = {"workouts"},
+            description = "Updates a workout with the specified id if one exists and belongs to the user and returns " +
+                    "the updated workout",
+            responses = {
+                @ApiResponse(description = "The updated workout"),
+                @ApiResponse(responseCode = "404", description = "Workout not found")}
+    )
     ResponseEntity<ReadWorkoutDto> updateWorkout(@AuthenticationPrincipal UserDetails userDetails,
                                                  @PathVariable Long id,
                                                  @Valid @RequestBody CreateUpdateWorkoutDto updateDto) {
@@ -73,7 +101,15 @@ public class WorkoutController {
         }
     }
 
-    @DeleteMapping(path = "/{id}")
+    @DeleteMapping(path = "/{id}", produces = "application/json")
+    @Operation(summary = "Delete workout",
+            tags = {"workouts"},
+            description = "Updates a workout with the specified id if one exists and belongs to the user and returns" +
+                    "the representation of the deleted workout",
+            responses = {
+                    @ApiResponse(description = "The deleted workout"),
+                    @ApiResponse(responseCode = "404", description = "Workout not found")}
+    )
     ResponseEntity<ReadWorkoutDto> deleteWorkout(@AuthenticationPrincipal UserDetails userDetails,
                                                  @PathVariable Long id) {
         Optional<ReadWorkoutDto> deletedWorkout = workoutService.delete(id, userDetails);

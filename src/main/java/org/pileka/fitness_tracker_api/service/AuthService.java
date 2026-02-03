@@ -1,6 +1,6 @@
 package org.pileka.fitness_tracker_api.service;
 
-import org.pileka.fitness_tracker_api.dto.auth.LoginDto;
+import org.pileka.fitness_tracker_api.dto.auth.LoginRequestDto;
 import org.pileka.fitness_tracker_api.dto.auth.TokenDto;
 import org.pileka.fitness_tracker_api.dto.auth.RegistrationDto;
 import org.pileka.fitness_tracker_api.exception.EntityRestrictionViolationException;
@@ -28,7 +28,7 @@ public interface AuthService {
      * @return a TokenDto object with two valid JWT tokens
      * @throws UserLoginFailedException Thrown when the authentication process fails
      */
-    TokenDto login(LoginDto request) throws UserLoginFailedException;
+    TokenDto login(LoginRequestDto request) throws UserLoginFailedException;
 
     /**
      * Return new bearer and refresh token if the provided refresh token is valid
