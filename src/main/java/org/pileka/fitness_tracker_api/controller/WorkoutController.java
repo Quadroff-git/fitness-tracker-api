@@ -30,7 +30,7 @@ public class WorkoutController {
     @GetMapping(produces = "application/json")
     @Operation(summary = "Get user's workouts",
             tags = {"workouts"},
-            description = "Returns user's workouts with filtering by type, date and duration intervals, sorting and pagination",
+            description = "Returns user's workouts with filtering by type, date and duration intervals, sorting and pagination.",
             responses = {@ApiResponse(description = "Workouts")}
     )
     Page<ReadWorkoutDto> getWorkouts(@AuthenticationPrincipal UserDetails userDetails,
@@ -39,7 +39,9 @@ public class WorkoutController {
                                      @RequestParam Optional<LocalDate> endDate,
                                      @RequestParam Optional<Integer> minDuration,
                                      @RequestParam Optional<Integer> maxDuration,
-                                     @PageableDefault(size = 20, sort = "date", direction = Sort.Direction.DESC) Pageable pageable) {
+
+                                     @PageableDefault(size = 20, sort = "date", direction = Sort.Direction.DESC)
+                                     @RequestParam(required = false) Pageable pageable) {
         return workoutService.findAll(userDetails,
                 type,
                 startDate,
