@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,7 +21,7 @@ public class CommonAdvice {
     @ResponseStatus(code = HttpStatus.NOT_FOUND)
     @ExceptionHandler(EntityDoesntBelongToUserException.class)
     public ResponseEntity<String> handleEntityDoesntBelongToUser() {
-        // Potentially log this since it might be done on purporse
+        // Potentially log this since it might be done on purpose
         return ResponseEntity.notFound().build();
     }
 
@@ -39,22 +40,27 @@ public class CommonAdvice {
         return ResponseEntity.badRequest().body(errorInfo.toString());
     }
 
-    @ExceptionHandler({EntityRestrictionViolationException.class,
-            HttpMessageNotReadableException.class,})
+    @ExceptionHandler(EntityRestrictionViolationException.class)
     @ResponseStatus(code = HttpStatus.CONFLICT)
-    public ResponseEntity<String> handleGenericBadRequest(EntityRestrictionViolationException e) {
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+    public ErrorResponse handleConflict(EntityRestrictionViolationException e) {
+        return ErrorResponse.create(e, HttpStatus.CONFLICT, "Data integrity conflict");
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleGenericBadRequest(HttpMessageNotReadableException e) {
+        return ErrorResponse.create(e, HttpStatus.BAD_REQUEST, "Bad request");
     }
 
     @ExceptionHandler(DataAccessException.class)
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<String> handleDataAccessException(DataAccessException e) {
-        return ResponseEntity.internalServerError().body("Something went wrong when accessing the database:\n" + e.getMessage());
+    public ErrorResponse handleDataAccessException(DataAccessException e) {
+        return ErrorResponse.create(e, HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong while accessing the database");
     }
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(code= HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<String> handleGenericInternalError(RuntimeException e) {
-        return ResponseEntity.internalServerError().body("Unexpected error happened:\n" + e.getMessage());
+    public ErrorResponse handleGenericInternalError(RuntimeException e) {
+        return ErrorResponse.create(e, HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error happened");
     }
 }
