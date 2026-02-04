@@ -43,24 +43,24 @@ public class CommonAdvice {
     @ExceptionHandler(EntityRestrictionViolationException.class)
     @ResponseStatus(code = HttpStatus.CONFLICT)
     public ErrorResponse handleConflict(EntityRestrictionViolationException e) {
-        return ErrorResponse.create(e, HttpStatus.CONFLICT, "Data integrity conflict");
+        return ErrorResponse.create(e, HttpStatus.CONFLICT, "Data integrity conflict: " + e.getMessage());
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public ErrorResponse handleGenericBadRequest(HttpMessageNotReadableException e) {
-        return ErrorResponse.create(e, HttpStatus.BAD_REQUEST, "Bad request");
+        return ErrorResponse.create(e, HttpStatus.BAD_REQUEST, "Bad request: " + e.getMessage());
     }
 
     @ExceptionHandler(DataAccessException.class)
     @ResponseStatus(code = HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleDataAccessException(DataAccessException e) {
-        return ErrorResponse.create(e, HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong while accessing the database");
+        return ErrorResponse.create(e, HttpStatus.INTERNAL_SERVER_ERROR, "Something went wrong while accessing the database:" + e.getMessage());
     }
 
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(code= HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleGenericInternalError(RuntimeException e) {
-        return ErrorResponse.create(e, HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error happened");
+        return ErrorResponse.create(e, HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error happened: " + e.getMessage());
     }
 }
