@@ -24,9 +24,9 @@ The following requirements are met:
 - Exception handling at controller level is centralized and implemented in `@ControllerAdvice` annotated classes at
 `org.pileka.exception.handler`
 - The code adheres to SOLID and is split into proper 3-layer architecture, as well as a number of additional classes.
-Base level interfaces and implementations were extracted wherever feasible
+Base level interfaces were extracted wherever feasible
 - DTO objects used throughout the code
-- Business logic (service layer classes) test coverage is 95% or higher for all metrics
+- Business logic (service layer classes) test coverage is 93% or higher for all metrics
 - GitFlow workflow used
 - Conventional Commits specification followed
 - Docker containerization set up
