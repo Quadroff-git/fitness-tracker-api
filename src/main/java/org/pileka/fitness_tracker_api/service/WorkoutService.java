@@ -1,6 +1,5 @@
 package org.pileka.fitness_tracker_api.service;
 
-import org.pileka.fitness_tracker_api.domain.Workout;
 import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.ReadWorkoutDto;
@@ -12,7 +11,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-public interface WorkoutService extends BaseService<Workout, ReadWorkoutDto, CreateUpdateWorkoutDto, CreateUpdateWorkoutDto, Long> {
+public interface WorkoutService {
 
     /**
      * Create a new workout belonging to user

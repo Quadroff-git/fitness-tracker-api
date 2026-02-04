@@ -1,5 +1,6 @@
 package org.pileka.fitness_tracker_api.service.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.pileka.fitness_tracker_api.domain.Workout;
 import org.pileka.fitness_tracker_api.domain.WorkoutType;
@@ -20,21 +21,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class WorkoutServiceImpl extends BaseServiceImpl<Workout, ReadWorkoutDto, CreateUpdateWorkoutDto, CreateUpdateWorkoutDto, Long> implements WorkoutService {
+@RequiredArgsConstructor
+public class WorkoutServiceImpl implements WorkoutService {
     private final WorkoutRepository workoutRepository;
     private final UserRepository userRepository;
-
-    public WorkoutServiceImpl(WorkoutRepository workoutRepository, UserRepository userRepository, ModelMapper modelMapper) {
-        super(workoutRepository, modelMapper);
-
-        this.workoutRepository = workoutRepository;
-        this.userRepository = userRepository;
-    }
-
-    @Override
-    public ReadWorkoutDto create(CreateUpdateWorkoutDto createDto) {
-        throw new UnsupportedOperationException("Can't create a workout without user information");
-    }
+    private final ModelMapper modelMapper;
 
     @Override
     public ReadWorkoutDto create(CreateUpdateWorkoutDto createDto, UserDetails userDetails) {
@@ -123,27 +114,6 @@ public class WorkoutServiceImpl extends BaseServiceImpl<Workout, ReadWorkoutDto,
                 throw new EntityDoesntBelongToUserException("User " + userDetails.getUsername() +
                         " attempted updating a workout with id " + id + " that doesn't belong to them");
             }
-        }
-        else {
-            return Optional.empty();
-        }
-    }
-
-    @Override
-    public Optional<ReadWorkoutDto> update(Long id, CreateUpdateWorkoutDto updateDto) {
-        Optional<Workout> workoutAtId = workoutRepository.findById(id);
-        if (workoutAtId.isPresent()) {
-            Workout workout = workoutAtId.get();
-
-            workout.setName(updateDto.getName());
-            workout.setType(updateDto.getType());
-            workout.setDate(updateDto.getDate());
-            workout.setDuration(updateDto.getDuration());
-            workout.setCalories(updateDto.getCalories());
-
-            workout = workoutRepository.save(workout);
-
-            return Optional.ofNullable(modelMapper.map(workout, ReadWorkoutDto.class));
         }
         else {
             return Optional.empty();

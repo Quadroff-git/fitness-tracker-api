@@ -105,13 +105,6 @@ class WorkoutServiceImplTest {
     }
 
     @Test
-    void createWithoutUserDetailsThrowsUnsupportedOperationException() {
-        assertThrows(UnsupportedOperationException.class, () -> {
-            workoutService.create(testCreateUpdateDto);
-        });
-    }
-
-    @Test
     void findByIdReturnsWorkoutDtoWhenWorkoutBelongsToUser() {
         when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(testWorkout));
 
@@ -124,15 +117,6 @@ class WorkoutServiceImplTest {
     }
 
     @Test
-    void findByIdReturnsEmptyOptionalWhenWorkoutNotFound() {
-        when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.empty());
-
-        Optional<ReadWorkoutDto> result = workoutService.findById(WORKOUT_ID);
-
-        assertTrue(result.isEmpty());
-    }
-
-    @Test
     void findByIdThrowsExceptionWhenWorkoutDoesNotBelongToUser() {
         testWorkout.setUser(differentUser);
         when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(testWorkout));
@@ -140,43 +124,6 @@ class WorkoutServiceImplTest {
         assertThrows(EntityDoesntBelongToUserException.class, () -> {
             workoutService.findById(WORKOUT_ID, testUser);
         });
-    }
-
-    @Test
-    void updateWithoutUserDetailsUpdatesWhenWorkoutExists() {
-        when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(testWorkout));
-        when(workoutRepository.save(any(Workout.class))).thenReturn(testWorkout);
-
-        CreateUpdateWorkoutDto updateDto = CreateUpdateWorkoutDto.builder()
-                .name("Updated Run")
-                .type(WorkoutType.STRENGTH)
-                .date(LocalDate.of(2024, 1, 2))
-                .duration(45)
-                .calories(400)
-                .build();
-
-        Optional<ReadWorkoutDto> result = workoutService.update(WORKOUT_ID, updateDto);
-
-        assertTrue(result.isPresent());
-        assertCreateUpdateDtoEqualsReadDto(updateDto, result.get());
-    }
-
-    @Test
-    void updateWithoutUserDetailsReturnsEmptyOptionalWhenWorkoutNotFound() {
-        when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.empty());
-
-        CreateUpdateWorkoutDto updateDto = CreateUpdateWorkoutDto.builder()
-                .name("Updated Run")
-                .type(WorkoutType.STRENGTH)
-                .date(LocalDate.of(2024, 1, 2))
-                .duration(45)
-                .calories(400)
-                .build();
-
-        Optional<ReadWorkoutDto> result = workoutService.update(WORKOUT_ID, updateDto);
-
-        assertTrue(result.isEmpty());
-        verify(workoutRepository, never()).save(any());
     }
 
     @Test

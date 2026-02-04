@@ -60,13 +60,6 @@ class MediaServiceImplTest {
     }
 
     @Test
-    void createWithoutUserDetailsThrowsUnsupportedOperationException() {
-        assertThrows(UnsupportedOperationException.class, () -> {
-            mediaService.create(testDto);
-        });
-    }
-
-    @Test
     void createWithUserDetailsSavesMediaAndReturnsDto() {
         when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(testUser));
         when(mediaRepository.save(any(Media.class))).thenReturn(testMedia);
@@ -78,32 +71,5 @@ class MediaServiceImplTest {
 
         verify(userRepository).findByUsername(USERNAME);
         verify(mediaRepository).save(any(Media.class));
-    }
-
-    @Test
-    void updateReturnsUpdatedDtoWhenMediaExists() {
-        when(mediaRepository.findById(MEDIA_ID)).thenReturn(Optional.of(testMedia));
-        when(mediaRepository.save(any(Media.class))).thenReturn(testMedia);
-
-        byte[] updatedImage = new byte[] { 9, 9, 9 };
-        MediaDto updateDto = new MediaDto();
-        updateDto.setImage(updatedImage);
-
-        Optional<MediaDto> result = mediaService.update(MEDIA_ID, updateDto);
-
-        assertTrue(result.isPresent());
-        assertArrayEquals(updatedImage, result.get().getImage());
-
-        verify(mediaRepository).save(any(Media.class));
-    }
-
-    @Test
-    void updateReturnsEmptyOptionalWhenMediaNotFound() {
-        when(mediaRepository.findById(MEDIA_ID)).thenReturn(Optional.empty());
-
-        Optional<MediaDto> result = mediaService.update(MEDIA_ID, testDto);
-
-        assertTrue(result.isEmpty());
-        verify(mediaRepository, never()).save(any());
     }
 }
