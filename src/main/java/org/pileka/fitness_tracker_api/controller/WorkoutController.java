@@ -30,7 +30,9 @@ public class WorkoutController {
     @GetMapping(produces = "application/json")
     @Operation(summary = "Get user's workouts",
             tags = {"workouts"},
-            description = "Returns user's workouts with filtering by type, date and duration intervals, sorting and pagination",
+            description = "Returns user's workouts with filtering by type, date and duration intervals, sorting and pagination. " +
+                    "Despite pageable being marked as required there are actually defaults defined for it which the doc generation tool" +
+                    "doesn't register",
             responses = {@ApiResponse(description = "Workouts")}
     )
     Page<ReadWorkoutDto> getWorkouts(@AuthenticationPrincipal UserDetails userDetails,
