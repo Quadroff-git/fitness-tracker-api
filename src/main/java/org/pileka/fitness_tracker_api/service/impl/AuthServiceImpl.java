@@ -54,11 +54,7 @@ public class AuthServiceImpl implements org.pileka.fitness_tracker_api.service.A
             throw new UserLoginFailedException(e);
         }
 
-        // If we get here, credentials are valid
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow();
-
-        return getTokenDto(user.getUsername());
+        return getTokenDto(request.getUsername());
     }
 
     @Override
