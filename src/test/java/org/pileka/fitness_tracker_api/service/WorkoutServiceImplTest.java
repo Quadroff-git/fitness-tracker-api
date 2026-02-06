@@ -13,12 +13,14 @@ import org.pileka.fitness_tracker_api.dto.workout.ReadWorkoutDto;
 import org.pileka.fitness_tracker_api.exception.EntityDoesntBelongToUserException;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.repository.WorkoutRepository;
+import org.pileka.fitness_tracker_api.security.CustomUserDetails;
 import org.pileka.fitness_tracker_api.service.impl.WorkoutServiceImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -40,9 +42,9 @@ class WorkoutServiceImplTest {
     WorkoutServiceImpl workoutService;
 
     private User testUser;
+    private UserDetails testUserDetails;
     private User differentUser;
     private Workout testWorkout;
-    private ReadWorkoutDto testReadDto;
     private CreateUpdateWorkoutDto testCreateUpdateDto;
 
     private static final Long WORKOUT_ID = 1L;
@@ -63,6 +65,8 @@ class WorkoutServiceImplTest {
         testUser.setUsername(USERNAME);
         testUser.setEmail("test@example.com");
         testUser.setPassword("encodedPassword");
+
+        testUserDetails = new CustomUserDetails(testUser.getUsername(), testUser.getPassword());
 
         differentUser = new User();
         differentUser.setId(2L);
@@ -93,7 +97,7 @@ class WorkoutServiceImplTest {
         when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(testUser));
         when(workoutRepository.save(any(Workout.class))).thenReturn(testWorkout);
 
-        ReadWorkoutDto result = workoutService.create(testCreateUpdateDto, testUser);
+        ReadWorkoutDto result = workoutService.create(testCreateUpdateDto, testUserDetails);
 
         assertReadDtoEqualsWorkout(result, testWorkout);
 
@@ -105,7 +109,7 @@ class WorkoutServiceImplTest {
     void findByIdReturnsWorkoutDtoWhenWorkoutBelongsToUser() {
         when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(testWorkout));
 
-        Optional<ReadWorkoutDto> result = workoutService.findById(WORKOUT_ID, testUser);
+        Optional<ReadWorkoutDto> result = workoutService.findById(WORKOUT_ID, testUserDetails);
 
         assertTrue(result.isPresent());
         ReadWorkoutDto dto = result.get();
@@ -119,7 +123,7 @@ class WorkoutServiceImplTest {
         when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(testWorkout));
 
         assertThrows(EntityDoesntBelongToUserException.class, () -> {
-            workoutService.findById(WORKOUT_ID, testUser);
+            workoutService.findById(WORKOUT_ID, testUserDetails);
         });
     }
 
@@ -136,7 +140,7 @@ class WorkoutServiceImplTest {
                 .calories(400)
                 .build();
 
-        Optional<ReadWorkoutDto> result = workoutService.update(WORKOUT_ID, testUser, updateDto);
+        Optional<ReadWorkoutDto> result = workoutService.update(WORKOUT_ID, testUserDetails, updateDto);
 
         assertTrue(result.isPresent());
         ReadWorkoutDto dto = result.get();
@@ -152,7 +156,7 @@ class WorkoutServiceImplTest {
         when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(testWorkout));
 
         assertThrows(EntityDoesntBelongToUserException.class, () -> {
-            workoutService.update(WORKOUT_ID, testUser, testCreateUpdateDto);
+            workoutService.update(WORKOUT_ID, testUserDetails, testCreateUpdateDto);
         });
 
         verify(workoutRepository, never()).save(any(Workout.class));
@@ -162,7 +166,7 @@ class WorkoutServiceImplTest {
     void updateWithUserDetailsReturnsEmptyOptionalWhenWorkoutNotFound() {
         when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.empty());
 
-        Optional<ReadWorkoutDto> result = workoutService.update(WORKOUT_ID, testUser, testCreateUpdateDto);
+        Optional<ReadWorkoutDto> result = workoutService.update(WORKOUT_ID, testUserDetails, testCreateUpdateDto);
 
         assertTrue(result.isEmpty());
         verify(workoutRepository, never()).save(any(Workout.class));
@@ -173,7 +177,7 @@ class WorkoutServiceImplTest {
         when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(testWorkout));
         doNothing().when(workoutRepository).delete(testWorkout);
 
-        Optional<ReadWorkoutDto> result = workoutService.delete(WORKOUT_ID, testUser);
+        Optional<ReadWorkoutDto> result = workoutService.delete(WORKOUT_ID, testUserDetails);
 
         assertTrue(result.isPresent());
         ReadWorkoutDto dto = result.get();
@@ -189,7 +193,7 @@ class WorkoutServiceImplTest {
         when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(testWorkout));
 
         assertThrows(EntityDoesntBelongToUserException.class, () -> {
-            workoutService.delete(WORKOUT_ID, testUser);
+            workoutService.delete(WORKOUT_ID, testUserDetails);
         });
 
         verify(workoutRepository, never()).delete(any(Workout.class));
@@ -199,7 +203,7 @@ class WorkoutServiceImplTest {
     void deleteReturnsEmptyOptionalWhenWorkoutNotFound() {
         when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.empty());
 
-        Optional<ReadWorkoutDto> result = workoutService.delete(WORKOUT_ID, testUser);
+        Optional<ReadWorkoutDto> result = workoutService.delete(WORKOUT_ID, testUserDetails);
 
         assertTrue(result.isEmpty());
         verify(workoutRepository, never()).delete(any(Workout.class));
@@ -214,7 +218,7 @@ class WorkoutServiceImplTest {
         when(workoutRepository.findAll(any(Specification.class))).thenReturn(filteredWorkouts);
 
         List<ReadWorkoutDto> result = workoutService.findAll(
-                testUser,
+                testUserDetails,
                 Optional.of(WorkoutType.YOGA),
                 Optional.of(LocalDate.of(2024, 1, 1)),
                 Optional.of(LocalDate.of(2024, 1, 31)),
@@ -237,7 +241,7 @@ class WorkoutServiceImplTest {
         when(workoutRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(filteredWorkouts);
 
         Page<ReadWorkoutDto> result = workoutService.findAll(
-                testUser,
+                testUserDetails,
                 Optional.of(WorkoutType.YOGA),
                 Optional.of(LocalDate.of(2024, 1, 1)),
                 Optional.of(LocalDate.of(2024, 1, 31)),

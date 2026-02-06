@@ -10,6 +10,7 @@ import org.pileka.fitness_tracker_api.domain.User;
 import org.pileka.fitness_tracker_api.dto.media.MediaDto;
 import org.pileka.fitness_tracker_api.repository.MediaRepository;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
+import org.pileka.fitness_tracker_api.security.CustomUserDetails;
 import org.pileka.fitness_tracker_api.service.impl.MediaServiceImpl;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -29,6 +30,7 @@ class MediaServiceImplTest {
     Media testMedia;
     MediaDto testDto;
     User testUser;
+    UserDetails testUserDetails;
 
     private static final Long MEDIA_ID = 1L;
     private static final String USERNAME = "testuser";
@@ -50,6 +52,8 @@ class MediaServiceImplTest {
         testUser.setId(1L);
         testUser.setUsername(USERNAME);
 
+        testUserDetails = new CustomUserDetails(testUser.getUsername(), testUser.getPassword());
+
         testMedia = new Media();
         testMedia.setId(MEDIA_ID);
         testMedia.setImage(IMAGE_BYTES);
@@ -64,7 +68,7 @@ class MediaServiceImplTest {
         when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(testUser));
         when(mediaRepository.save(any(Media.class))).thenReturn(testMedia);
 
-        MediaDto result = mediaService.create(testDto, testUser);
+        MediaDto result = mediaService.create(testDto, testUserDetails);
 
         assertNotNull(result);
         assertArrayEquals(IMAGE_BYTES, result.getImage());
