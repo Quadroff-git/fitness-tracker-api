@@ -30,11 +30,10 @@ public class AuthServiceImpl implements org.pileka.fitness_tracker_api.service.A
     public void register(RegistrationDto request) throws EntityRestrictionViolationException {
         // Mapping manually here because the passwords aren't encoded in the DTO,
         // and if you have to encrypt and inject it manually why even bother?
-        User user = User.builder()
-                .username(request.getUsername())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .build();
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
         try {
             userRepository.save(user);
         } catch (DataIntegrityViolationException e) {
