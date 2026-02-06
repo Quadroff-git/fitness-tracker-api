@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,5 +15,6 @@ public interface MediaController {
             description = "Adds new media associated with the user",
             responses = {@ApiResponse(description = "Success message")}
     )
+    @PostMapping(produces = "plain/text", consumes="multipart/form-data")
     ResponseEntity<String> addMedia(@AuthenticationPrincipal UserDetails userDetails, @RequestParam MultipartFile image);
 }

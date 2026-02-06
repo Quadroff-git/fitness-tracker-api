@@ -11,6 +11,7 @@ import org.pileka.fitness_tracker_api.dto.auth.RegistrationDto;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CookieValue;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 public interface AuthController {
@@ -18,6 +19,7 @@ public interface AuthController {
             tags = {"auth"},
             description = "Adds a new user"
     )
+    @PostMapping("/register")
     ResponseEntity register(@Valid @RequestBody RegistrationDto request);
 
     @Operation(summary = "Authenticate an existing user",
@@ -36,6 +38,7 @@ public interface AuthController {
             )
             }
     )
+    @PostMapping(path = "/login", produces = "application/json")
     ResponseEntity<LoginRefreshResponseDto> login(@Valid @RequestBody LoginRequestDto request);
 
     @Operation(summary = "Refresh client's tokens",
@@ -53,5 +56,6 @@ public interface AuthController {
                     }
             )
             })
+    @PostMapping(path = "/refresh", produces = "application/json")
     ResponseEntity<LoginRefreshResponseDto> refresh(@CookieValue("refresh_token") String refreshToken);
 }
