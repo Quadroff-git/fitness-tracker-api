@@ -15,18 +15,12 @@ import java.util.List;
 
 @Entity
 @Table(name = "app_user")
-// Excluding because the objects are passed around detached in security context, and this property isn't really used anyway
-@EqualsAndHashCode(exclude = "workouts")
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class User implements UserDetails {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class User extends BaseEntity implements UserDetails {
     @NotBlank(message = "Username is required")
     @Column(nullable = false, unique = true)
     private String username;
@@ -40,9 +34,11 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Workout> workouts;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Media> media;
 
