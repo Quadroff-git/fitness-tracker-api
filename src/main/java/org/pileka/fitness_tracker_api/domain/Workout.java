@@ -2,24 +2,18 @@ package org.pileka.fitness_tracker_api.domain;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "workout")
-@Data
-@Builder
+@Getter
+@Setter
+@ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class Workout {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class Workout extends BaseEntity {
     @NotBlank(message = "Workout name is required")
     @Size(max = 100, message = "Workout name must be less than or equal to 100 characters")
     @Column(nullable = false, length = 100)
@@ -46,6 +40,7 @@ public class Workout {
     private Integer calories;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 }

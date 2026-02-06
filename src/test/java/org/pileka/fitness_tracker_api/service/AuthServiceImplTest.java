@@ -70,11 +70,10 @@ public class AuthServiceImplTest {
         this.registrationDto = new RegistrationDto(USERNAME, PASSWORD, "cool@email.com");
         this.tokenDto = new TokenDto(BEARER_TOKEN, BEARER_TOKEN_EXPIRATION, REFRESH_TOKEN, REFRESH_TOKEN_EXPIRATION);
 
-        this.user = User.builder()
-                .username(USERNAME)
-                .email("cool@email.com")
-                .password(passwordEncoder.encode(PASSWORD))
-                .build();
+        this.user = new User();
+        this.user.setUsername(USERNAME);
+        this.user.setEmail("cool@email.com");
+        this.user.setPassword(passwordEncoder.encode(PASSWORD));
     }
 
     private void setUpFullTokenDtoMock() {
@@ -115,7 +114,11 @@ public class AuthServiceImplTest {
 
     @Test
     void loginReturnsTokensForValidUser() {
-        when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.ofNullable(User.builder().username(USERNAME).password(PASSWORD).build()));
+        User user = new User();
+        user.setUsername(USERNAME);
+        user.setPassword(PASSWORD);
+
+        when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(user));
         setUpFullTokenDtoMock();
 
         TokenDto result = authService.login(loginRequestDto);

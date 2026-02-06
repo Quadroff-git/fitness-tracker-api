@@ -34,11 +34,10 @@ public class UserDetailsServiceImplTest {
 
     @BeforeEach
     void setUpTestEntities() {
-        this.user = User.builder()
-                .username(USERNAME)
-                .password("coolpassword")
-                .email("cool@email.com")
-                .build();
+        this.user = new User();
+        this.user.setUsername(USERNAME);
+        this.user.setEmail("cool@email.com");
+        this.user.setPassword("coolpassword");
     }
 
     @Test

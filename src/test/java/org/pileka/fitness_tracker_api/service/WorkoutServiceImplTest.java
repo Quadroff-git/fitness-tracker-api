@@ -58,29 +58,26 @@ class WorkoutServiceImplTest {
 
     @BeforeEach
     void setUpTestEntities() {
-        testUser = User.builder()
-                .id(1L)
-                .username(USERNAME)
-                .email("test@example.com")
-                .password("encodedPassword")
-                .build();
+        testUser = new User();
+        testUser.setId(1L);
+        testUser.setUsername(USERNAME);
+        testUser.setEmail("test@example.com");
+        testUser.setPassword("encodedPassword");
 
-        differentUser = User.builder()
-                .id(2L)
-                .username(DIFFERENT_USERNAME)
-                .email("different@example.com")
-                .password("password")
-                .build();
+        differentUser = new User();
+        differentUser.setId(2L);
+        differentUser.setUsername(DIFFERENT_USERNAME);
+        differentUser.setEmail("different@example.com");
+        differentUser.setPassword("password");
 
-        testWorkout = Workout.builder()
-                .id(WORKOUT_ID)
-                .name("Morning Run")
-                .type(WorkoutType.CARDIO)
-                .date(LocalDate.of(2024, 1, 1))
-                .duration(30)
-                .calories(300)
-                .user(testUser)
-                .build();
+        testWorkout = new Workout();
+        testWorkout.setId(WORKOUT_ID);
+        testWorkout.setName("Morning Run");
+        testWorkout.setType(WorkoutType.CARDIO);
+        testWorkout.setDate(LocalDate.of(2024, 1, 1));
+        testWorkout.setDuration(30);
+        testWorkout.setCalories(300);
+        testWorkout.setUser(testUser);
 
         testCreateUpdateDto = CreateUpdateWorkoutDto.builder()
                 .name("Morning Run")
@@ -322,15 +319,16 @@ class WorkoutServiceImplTest {
     private Workout getTestWorkout(int i) {
         Random random = new Random();
 
-        return Workout.builder()
-                .id((long) i)
-                .name("Test workout " + i)
-                .type(WorkoutType.values()[random.nextInt(WorkoutType.values().length)])
-                .date(LocalDate.of(2024, 1, 1 + i))
-                .duration(30 + i)
-                .calories(300 + i * 50)
-                .user(testUser)
-                .build();
+        Workout workout = new Workout();
+        workout.setId((long) i);
+        workout.setName("Test workout " + i);
+        workout.setType(WorkoutType.values()[random.nextInt(WorkoutType.values().length)]);
+        workout.setDate(LocalDate.of(2024, 1, 1 + i));
+        workout.setDuration(30 + i);
+        workout.setCalories(300 + i * 50);
+        workout.setUser(testUser);
+
+        return workout;
     }
 
     private List<Workout> getTestWorkouts(int n) {
