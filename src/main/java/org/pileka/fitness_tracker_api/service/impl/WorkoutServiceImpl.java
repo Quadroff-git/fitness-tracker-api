@@ -38,7 +38,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     public Optional<ReadWorkoutDto> findById(Long id, UserDetails userDetails) {
         Optional<Workout> workoutAtId = workoutRepository.findById(id);
         if (workoutAtId.isPresent()) {
-            if (workoutAtId.get().getUser().equals(userDetails)) {
+            if (workoutAtId.get().getUser().getUsername().equals(userDetails.getUsername())) {
                 return Optional.ofNullable(workoutMapper.toDto(workoutAtId.get()));
             }
             else {
