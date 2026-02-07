@@ -12,4 +12,6 @@ public interface MediaMapper {
 
     @Mapping(target = "id", expression = "java(null)") // maps user.id to media.id without this line
     Media toModel(MediaDto dto, User user);
+
+    MediaDto toDto(Media entity);
 }
