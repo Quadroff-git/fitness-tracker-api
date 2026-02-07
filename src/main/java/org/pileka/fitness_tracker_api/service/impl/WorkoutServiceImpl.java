@@ -1,12 +1,12 @@
 package org.pileka.fitness_tracker_api.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.pileka.fitness_tracker_api.domain.Workout;
 import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.ReadWorkoutDto;
 import org.pileka.fitness_tracker_api.exception.EntityDoesntBelongToUserException;
+import org.pileka.fitness_tracker_api.mapper.WorkoutMapper;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.repository.WorkoutRepository;
 import org.pileka.fitness_tracker_api.repository.specification.WorkoutSpecs;
@@ -25,15 +25,13 @@ import java.util.Optional;
 public class WorkoutServiceImpl implements WorkoutService {
     private final WorkoutRepository workoutRepository;
     private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
+    private final WorkoutMapper workoutMapper;
 
     @Override
     public ReadWorkoutDto create(CreateUpdateWorkoutDto createDto, UserDetails userDetails) {
-        // Most of the mapping is done by ModelMapper, but User is injected manually
-        Workout newWorkout = modelMapper.map(createDto, Workout.class);
-        newWorkout.setUser(userRepository.findByUsername(userDetails.getUsername()).get());
+        Workout newWorkout = workoutMapper.toModel(createDto, userRepository.findByUsername(userDetails.getUsername()).get());
 
-        return modelMapper.map(workoutRepository.save(newWorkout), ReadWorkoutDto.class);
+        return workoutMapper.toDto(workoutRepository.save(newWorkout));
     }
 
     @Override
@@ -41,7 +39,7 @@ public class WorkoutServiceImpl implements WorkoutService {
         Optional<Workout> workoutAtId = workoutRepository.findById(id);
         if (workoutAtId.isPresent()) {
             if (workoutAtId.get().getUser().equals(userDetails)) {
-                return Optional.ofNullable(modelMapper.map(workoutAtId, ReadWorkoutDto.class));
+                return Optional.ofNullable(workoutMapper.toDto(workoutAtId.get()));
             }
             else {
                 throw new EntityDoesntBelongToUserException("User " + userDetails.getUsername() +
@@ -69,7 +67,7 @@ public class WorkoutServiceImpl implements WorkoutService {
                     minDuration,
                     maxDuration
                 )
-        ).stream().map(workout -> modelMapper.map(workout, ReadWorkoutDto.class)).toList();
+        ).stream().map(workoutMapper::toDto).toList();
     }
 
     @Override
@@ -90,7 +88,7 @@ public class WorkoutServiceImpl implements WorkoutService {
                         maxDuration
                 ),
                 pageable
-        ).map(workout -> modelMapper.map(workout, ReadWorkoutDto.class));
+        ).map(workoutMapper::toDto);
     }
 
     @Override
@@ -100,15 +98,11 @@ public class WorkoutServiceImpl implements WorkoutService {
             if (workoutAtId.get().getUser().equals(userDetails)) {
                 Workout workout = workoutAtId.get();
 
-                workout.setName(updateDto.getName());
-                workout.setType(updateDto.getType());
-                workout.setDate(updateDto.getDate());
-                workout.setDuration(updateDto.getDuration());
-                workout.setCalories(updateDto.getCalories());
+                workoutMapper.update(updateDto, workout);
 
                 workout = workoutRepository.save(workout);
 
-                return Optional.ofNullable(modelMapper.map(workout, ReadWorkoutDto.class));
+                return Optional.ofNullable(workoutMapper.toDto(workout));
             }
             else {
                 throw new EntityDoesntBelongToUserException("User " + userDetails.getUsername() +
@@ -126,7 +120,7 @@ public class WorkoutServiceImpl implements WorkoutService {
         if (optionalWorkout.isPresent()) {
             if (optionalWorkout.get().getUser().equals(userDetails)){
                 workoutRepository.delete(optionalWorkout.get());
-                return Optional.ofNullable(modelMapper.map(optionalWorkout, ReadWorkoutDto.class));
+                return Optional.ofNullable(workoutMapper.toDto(optionalWorkout.get()));
             }
             else {
                 throw new EntityDoesntBelongToUserException("User " + userDetails.getUsername() +
