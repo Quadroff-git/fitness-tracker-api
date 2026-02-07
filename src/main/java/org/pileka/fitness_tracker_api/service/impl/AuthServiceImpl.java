@@ -8,13 +8,13 @@ import org.pileka.fitness_tracker_api.dto.auth.RegistrationDto;
 import org.pileka.fitness_tracker_api.exception.EntityRestrictionViolationException;
 import org.pileka.fitness_tracker_api.exception.RefreshTokenInvalidException;
 import org.pileka.fitness_tracker_api.exception.UserLoginFailedException;
+import org.pileka.fitness_tracker_api.mapper.UserMapper;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.security.JwtTokenProvider;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -22,20 +22,15 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements org.pileka.fitness_tracker_api.service.AuthService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
+    private final UserMapper userMapper;
 
     @Override
     public void register(RegistrationDto request) throws EntityRestrictionViolationException {
-        // Mapping manually here because the passwords aren't encoded in the DTO,
-        // and if you have to encrypt and inject it manually why even bother?
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        User newUser = userMapper.toModel(request);
         try {
-            userRepository.save(user);
+            userRepository.save(newUser);
         } catch (DataIntegrityViolationException e) {
             throw new EntityRestrictionViolationException(e);
         }
