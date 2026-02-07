@@ -62,7 +62,7 @@ public class AuthServiceImplTest {
         this.jwtTokenProvider = mock(JwtTokenProvider.class);
         this.authenticationManager = mock(AuthenticationManager.class);
 
-        this.authService = new AuthServiceImpl(userRepository, jwtTokenProvider, authenticationManager, Mappers.getMapper(UserMapper.class));
+        this.authService = new AuthServiceImpl(userRepository, jwtTokenProvider, authenticationManager, new BCryptPasswordEncoder(), Mappers.getMapper(UserMapper.class));
     }
 
     @BeforeEach
