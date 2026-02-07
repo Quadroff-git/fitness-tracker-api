@@ -95,7 +95,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     public Optional<ReadWorkoutDto> update(Long id, UserDetails userDetails, CreateUpdateWorkoutDto updateDto) {
         Optional<Workout> workoutAtId = workoutRepository.findById(id);
         if (workoutAtId.isPresent()) {
-            if (workoutAtId.get().getUser().equals(userDetails)) {
+            if (workoutAtId.get().getUser().getUsername().equals(userDetails.getUsername())) {
                 Workout workout = workoutAtId.get();
 
                 workoutMapper.update(updateDto, workout);
@@ -118,7 +118,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     public Optional<ReadWorkoutDto> delete(Long id, UserDetails userDetails) {
         Optional<Workout> optionalWorkout = workoutRepository.findById(id);
         if (optionalWorkout.isPresent()) {
-            if (optionalWorkout.get().getUser().equals(userDetails)){
+            if (optionalWorkout.get().getUser().getUsername().equals(userDetails.getUsername())){
                 workoutRepository.delete(optionalWorkout.get());
                 return Optional.ofNullable(workoutMapper.toDto(optionalWorkout.get()));
             }
