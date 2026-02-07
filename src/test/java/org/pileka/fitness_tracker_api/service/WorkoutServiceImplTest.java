@@ -3,6 +3,7 @@ package org.pileka.fitness_tracker_api.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.pileka.fitness_tracker_api.domain.User;
@@ -11,6 +12,7 @@ import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.ReadWorkoutDto;
 import org.pileka.fitness_tracker_api.exception.EntityDoesntBelongToUserException;
+import org.pileka.fitness_tracker_api.mapper.WorkoutMapper;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.repository.WorkoutRepository;
 import org.pileka.fitness_tracker_api.security.CustomUserDetails;
@@ -55,7 +57,7 @@ class WorkoutServiceImplTest {
         this.workoutRepository = mock(WorkoutRepository.class);
         this.userRepository = mock(UserRepository.class);
 
-        this.workoutService = new WorkoutServiceImpl(workoutRepository, userRepository, new ModelMapper());
+        this.workoutService = new WorkoutServiceImpl(workoutRepository, userRepository, Mappers.getMapper(WorkoutMapper.class));
     }
 
     @BeforeEach

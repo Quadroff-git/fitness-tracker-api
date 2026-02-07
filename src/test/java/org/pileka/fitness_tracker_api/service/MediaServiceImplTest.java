@@ -3,11 +3,13 @@ package org.pileka.fitness_tracker_api.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.pileka.fitness_tracker_api.domain.Media;
 import org.pileka.fitness_tracker_api.domain.User;
 import org.pileka.fitness_tracker_api.dto.media.MediaDto;
+import org.pileka.fitness_tracker_api.mapper.MediaMapper;
 import org.pileka.fitness_tracker_api.repository.MediaRepository;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.security.CustomUserDetails;
@@ -42,7 +44,7 @@ class MediaServiceImplTest {
         this.mediaService = new MediaServiceImpl(
                 mediaRepository,
                 userRepository,
-                new ModelMapper()
+                Mappers.getMapper(MediaMapper.class)
         );
     }
 

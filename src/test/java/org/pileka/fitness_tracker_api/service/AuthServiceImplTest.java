@@ -3,6 +3,7 @@ package org.pileka.fitness_tracker_api.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mapstruct.factory.Mappers;
 import org.pileka.fitness_tracker_api.domain.User;
 import org.pileka.fitness_tracker_api.dto.auth.LoginRequestDto;
 import org.pileka.fitness_tracker_api.dto.auth.RegistrationDto;
@@ -10,6 +11,7 @@ import org.pileka.fitness_tracker_api.dto.auth.TokenDto;
 import org.pileka.fitness_tracker_api.exception.EntityRestrictionViolationException;
 import org.pileka.fitness_tracker_api.exception.RefreshTokenInvalidException;
 import org.pileka.fitness_tracker_api.exception.UserLoginFailedException;
+import org.pileka.fitness_tracker_api.mapper.UserMapper;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.security.JwtTokenProvider;
 import org.pileka.fitness_tracker_api.service.impl.AuthServiceImpl;
@@ -59,9 +61,8 @@ public class AuthServiceImplTest {
         this.userRepository = mock(UserRepository.class);
         this.jwtTokenProvider = mock(JwtTokenProvider.class);
         this.authenticationManager = mock(AuthenticationManager.class);
-        this.passwordEncoder = new BCryptPasswordEncoder();
 
-        this.authService = new AuthServiceImpl(userRepository, passwordEncoder, jwtTokenProvider, authenticationManager);
+        this.authService = new AuthServiceImpl(userRepository, jwtTokenProvider, authenticationManager, Mappers.getMapper(UserMapper.class));
     }
 
     @BeforeEach
