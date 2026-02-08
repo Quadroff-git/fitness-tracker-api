@@ -28,15 +28,13 @@ public class WorkoutControllerImpl implements WorkoutController {
 
     @GetMapping(produces = "application/json")
     @Override
-    public Page<ReadWorkoutDto> getWorkouts(@AuthenticationPrincipal UserDetails userDetails,
-                                     @RequestParam Optional<WorkoutType> type,
+    public Page<ReadWorkoutDto> getWorkouts(@RequestParam Optional<WorkoutType> type,
                                      @RequestParam Optional<LocalDate> startDate,
                                      @RequestParam Optional<LocalDate> endDate,
                                      @RequestParam Optional<Integer> minDuration,
                                      @RequestParam Optional<Integer> maxDuration,
                                      @PageableDefault(size = 20, sort = "date", direction = Sort.Direction.DESC) Pageable pageable) {
-        return workoutService.findAll(userDetails,
-                type,
+        return workoutService.findAll(type,
                 startDate,
                 endDate,
                 minDuration,
@@ -46,9 +44,8 @@ public class WorkoutControllerImpl implements WorkoutController {
 
     @GetMapping(path = "/{id}", produces = "application/json")
     @Override
-    public ResponseEntity<ReadWorkoutDto> getWorkoutById(@AuthenticationPrincipal UserDetails userDetails,
-                                                  @PathVariable Long id) {
-        Optional<ReadWorkoutDto> workout = workoutService.findById(id, userDetails);
+    public ResponseEntity<ReadWorkoutDto> getWorkoutById(@PathVariable Long id) {
+        Optional<ReadWorkoutDto> workout = workoutService.findById(id);
         if (workout.isPresent()) {
             return ResponseEntity.ok(workout.get());
         }
@@ -59,17 +56,15 @@ public class WorkoutControllerImpl implements WorkoutController {
 
     @PostMapping(produces = "application/json")
     @Override
-    public ReadWorkoutDto addWorkout(@AuthenticationPrincipal UserDetails userDetails,
-                              @Valid @RequestBody CreateUpdateWorkoutDto createDto) {
-        return workoutService.create(createDto, userDetails);
+    public ReadWorkoutDto addWorkout(@Valid @RequestBody CreateUpdateWorkoutDto createDto) {
+        return workoutService.create(createDto);
     }
 
     @PutMapping(path = "/{id}", produces = "application/json")
     @Override
-    public ResponseEntity<ReadWorkoutDto> updateWorkout(@AuthenticationPrincipal UserDetails userDetails,
-                                                 @PathVariable Long id,
+    public ResponseEntity<ReadWorkoutDto> updateWorkout(@PathVariable Long id,
                                                  @Valid @RequestBody CreateUpdateWorkoutDto updateDto) {
-        Optional<ReadWorkoutDto> updatedWorkout = workoutService.update(id, userDetails, updateDto);
+        Optional<ReadWorkoutDto> updatedWorkout = workoutService.update(id, updateDto);
         if (updatedWorkout.isPresent()) {
             return ResponseEntity.ok(updatedWorkout.get());
         }
@@ -80,9 +75,8 @@ public class WorkoutControllerImpl implements WorkoutController {
 
     @DeleteMapping(path = "/{id}", produces = "application/json")
     @Override
-    public ResponseEntity<ReadWorkoutDto> deleteWorkout(@AuthenticationPrincipal UserDetails userDetails,
-                                                 @PathVariable Long id) {
-        Optional<ReadWorkoutDto> deletedWorkout = workoutService.delete(id, userDetails);
+    public ResponseEntity<ReadWorkoutDto> deleteWorkout(@PathVariable Long id) {
+        Optional<ReadWorkoutDto> deletedWorkout = workoutService.delete(id);
         if (deletedWorkout.isPresent()) {
             return ResponseEntity.ok(deletedWorkout.get());
         }
