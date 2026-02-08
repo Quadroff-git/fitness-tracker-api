@@ -20,7 +20,7 @@ public class MediaControllerImpl implements MediaController {
 
     @PostMapping(produces = "plain/text", consumes="multipart/form-data")
     @Override
-    public ResponseEntity<String> addMedia(@AuthenticationPrincipal UserDetails userDetails, @RequestParam MultipartFile image) {
+    public ResponseEntity<String> addMedia(@RequestParam MultipartFile image) {
         if (image.getContentType() == null || !image.getContentType().startsWith("image/")) {
             return ResponseEntity.badRequest().body("Only image uploading is allowed");
         }
@@ -36,7 +36,7 @@ public class MediaControllerImpl implements MediaController {
             return ResponseEntity.internalServerError().body("Something failed when reading the image");
         }
 
-        mediaService.create(mediaDto, userDetails);
+        mediaService.create(mediaDto);
 
         return ResponseEntity.ok("Saved successfully");
     }

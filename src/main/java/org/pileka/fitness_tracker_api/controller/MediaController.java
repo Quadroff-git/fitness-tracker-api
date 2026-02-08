@@ -16,5 +16,5 @@ public interface MediaController {
             responses = {@ApiResponse(description = "Success message")}
     )
     @PostMapping(produces = "plain/text", consumes="multipart/form-data")
-    ResponseEntity<String> addMedia(@AuthenticationPrincipal UserDetails userDetails, @RequestParam MultipartFile image);
+    ResponseEntity<String> addMedia(@RequestParam MultipartFile image);
 }

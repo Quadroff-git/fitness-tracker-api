@@ -27,8 +27,7 @@ public interface WorkoutController {
                     "doesn't register",
             responses = {@ApiResponse(description = "Workouts")}
     )
-    Page<ReadWorkoutDto> getWorkouts(@AuthenticationPrincipal UserDetails userDetails,
-                                     @RequestParam Optional<WorkoutType> type,
+    Page<ReadWorkoutDto> getWorkouts(@RequestParam Optional<WorkoutType> type,
                                      @RequestParam Optional<LocalDate> startDate,
                                      @RequestParam Optional<LocalDate> endDate,
                                      @RequestParam Optional<Integer> minDuration,
@@ -43,8 +42,7 @@ public interface WorkoutController {
                     @ApiResponse(description = "The workout"),
                     @ApiResponse(responseCode = "404", description = "Workout not found")}
     )
-    ResponseEntity<ReadWorkoutDto> getWorkoutById(@AuthenticationPrincipal UserDetails userDetails,
-                                                  @PathVariable Long id);
+    ResponseEntity<ReadWorkoutDto> getWorkoutById(@PathVariable Long id);
 
     @PostMapping(produces = "application/json")
     @Operation(summary = "Add workout",
@@ -53,8 +51,7 @@ public interface WorkoutController {
                     "newly created workout",
             responses = {@ApiResponse(description = "The created workout")}
     )
-    ReadWorkoutDto addWorkout(@AuthenticationPrincipal UserDetails userDetails,
-                              @Valid @RequestBody CreateUpdateWorkoutDto createDto);
+    ReadWorkoutDto addWorkout(@Valid @RequestBody CreateUpdateWorkoutDto createDto);
 
     @PutMapping(path = "/{id}", produces = "application/json")
     @Operation(summary = "Update workout",
@@ -65,8 +62,7 @@ public interface WorkoutController {
                     @ApiResponse(description = "The updated workout"),
                     @ApiResponse(responseCode = "404", description = "Workout not found")}
     )
-    ResponseEntity<ReadWorkoutDto> updateWorkout(@AuthenticationPrincipal UserDetails userDetails,
-                                                 @PathVariable Long id,
+    ResponseEntity<ReadWorkoutDto> updateWorkout(@PathVariable Long id,
                                                  @Valid @RequestBody CreateUpdateWorkoutDto updateDto);
 
     @DeleteMapping(path = "/{id}", produces = "application/json")
@@ -78,6 +74,5 @@ public interface WorkoutController {
                     @ApiResponse(description = "The deleted workout"),
                     @ApiResponse(responseCode = "404", description = "Workout not found")}
     )
-    ResponseEntity<ReadWorkoutDto> deleteWorkout(@AuthenticationPrincipal UserDetails userDetails,
-                                                 @PathVariable Long id);
+    ResponseEntity<ReadWorkoutDto> deleteWorkout(@PathVariable Long id);
 }

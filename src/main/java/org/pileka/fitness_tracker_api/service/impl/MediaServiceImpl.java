@@ -6,8 +6,8 @@ import org.pileka.fitness_tracker_api.dto.media.MediaDto;
 import org.pileka.fitness_tracker_api.mapper.MediaMapper;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.repository.MediaRepository;
+import org.pileka.fitness_tracker_api.security.AuthUserUtil;
 import org.pileka.fitness_tracker_api.service.MediaService;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,8 +18,11 @@ public class MediaServiceImpl implements MediaService {
     private final UserRepository userRepository;
     private final MediaMapper mediaMapper;
 
-    public MediaDto create(MediaDto createDto, UserDetails userDetails) {
-        Media newMedia = mediaMapper.toModel(createDto, userRepository.findByUsername(userDetails.getUsername()).get());
+    public MediaDto create(MediaDto createDto) {
+        Media newMedia = mediaMapper.toModel(createDto,
+                userRepository.findByUsername(
+                        AuthUserUtil.getCurrentUser().getUsername()
+                ).get());
 
         return mediaMapper.toDto(mediaRepository.save(newMedia));
     }
