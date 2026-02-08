@@ -26,4 +26,9 @@ public interface MediaDto {
      * @throws IOException - in case of access errors
      */
     byte[] getBytes() throws IOException;
+
+    /**
+     * Return whether the uploaded file is empty
+     */
+    boolean isEmpty();
 }
