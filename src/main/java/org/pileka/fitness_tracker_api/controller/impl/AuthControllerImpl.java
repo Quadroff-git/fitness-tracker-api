@@ -37,13 +37,7 @@ public class AuthControllerImpl implements AuthController {
     @PostMapping(path = "/refresh", produces = "application/json")
     @Override
     public ResponseEntity<LoginRefreshResponseDto> refresh(@CookieValue("refresh_token") String refreshToken) {
-        TokenDto tokenDto = authService.refresh(refreshToken);
-        if (tokenDto != null) {
-            return getResponseFromTokenDto(tokenDto);
-        }
-        else {
-            return ResponseEntity.status(HttpStatusCode.valueOf(401)).build();
-        }
+        return getResponseFromTokenDto(authService.refresh(refreshToken));
     }
 
     private ResponseEntity<LoginRefreshResponseDto> getResponseFromTokenDto(TokenDto tokenDto) {
