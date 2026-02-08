@@ -26,4 +26,9 @@ public class MediaDtoImpl implements MediaDto {
     public byte[] getBytes() throws IOException {
         return file.getBytes();
     }
+
+    @Override
+    public boolean isEmpty() {
+        return file.isEmpty();
+    }
 }
