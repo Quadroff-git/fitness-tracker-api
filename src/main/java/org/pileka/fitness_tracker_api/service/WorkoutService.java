@@ -25,10 +25,9 @@ public interface WorkoutService {
      * Get user's workout by id
      *
      * @param id workout id
-     * @return workout DTO or null wrapped in Optional if no workout
-     * with this id belonging to this userDetails is found
+     * @return workout DTO
      * */
-    public Optional<ReadWorkoutDto> findById(Long id);
+    ReadWorkoutDto findById(Long id);
 
     /**
      * Get userDetails's workouts, optionally according to some filters
@@ -41,7 +40,7 @@ public interface WorkoutService {
      * @return List of workout DTOs that fit the filters
      */
     // Using Optional in parameters because that's what we get from the request in the controllers
-    public List<ReadWorkoutDto> findAll(Optional<WorkoutType> type,
+    List<ReadWorkoutDto> findAll(Optional<WorkoutType> type,
                                         Optional<LocalDate> startDate,
                                         Optional<LocalDate> endDate,
                                         Optional<Integer> minDuration,
@@ -70,17 +69,15 @@ public interface WorkoutService {
      *
      * @param id id of the workout to update
      * @param updateDto DTO containing new values for the workout
-     * @return updated workout DTO or null wrapped in Optional if no workout
-     * with this id belonging to this userDetails is found
+     * @return updated workout DTO
      * */
-    Optional<ReadWorkoutDto> update(Long id, CreateUpdateWorkoutDto updateDto);
+    ReadWorkoutDto update(Long id, CreateUpdateWorkoutDto updateDto);
 
     /**
      * Delete user's workout by id
      *
      * @param id id of the workout to delete
-     * @return deleted workout DTO or null wrapped in Optional if no workout
-     * with this id belonging to this userDetails is found
+     * @return deleted workout DTO
      */
-    Optional<ReadWorkoutDto> delete(Long id);
+    ReadWorkoutDto delete(Long id);
 }
