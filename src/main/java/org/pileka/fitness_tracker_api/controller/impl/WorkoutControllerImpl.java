@@ -44,14 +44,8 @@ public class WorkoutControllerImpl implements WorkoutController {
 
     @GetMapping(path = "/{id}", produces = "application/json")
     @Override
-    public ResponseEntity<ReadWorkoutDto> getWorkoutById(@PathVariable Long id) {
-        Optional<ReadWorkoutDto> workout = workoutService.findById(id);
-        if (workout.isPresent()) {
-            return ResponseEntity.ok(workout.get());
-        }
-        else {
-            return ResponseEntity.notFound().build();
-        }
+    public ReadWorkoutDto getWorkoutById(@PathVariable Long id) {
+        return workoutService.findById(id);
     }
 
     @PostMapping(produces = "application/json")
@@ -62,26 +56,14 @@ public class WorkoutControllerImpl implements WorkoutController {
 
     @PutMapping(path = "/{id}", produces = "application/json")
     @Override
-    public ResponseEntity<ReadWorkoutDto> updateWorkout(@PathVariable Long id,
+    public ReadWorkoutDto updateWorkout(@PathVariable Long id,
                                                  @Valid @RequestBody CreateUpdateWorkoutDto updateDto) {
-        Optional<ReadWorkoutDto> updatedWorkout = workoutService.update(id, updateDto);
-        if (updatedWorkout.isPresent()) {
-            return ResponseEntity.ok(updatedWorkout.get());
-        }
-        else {
-            return ResponseEntity.notFound().build();
-        }
+        return workoutService.update(id, updateDto);
     }
 
     @DeleteMapping(path = "/{id}", produces = "application/json")
     @Override
-    public ResponseEntity<ReadWorkoutDto> deleteWorkout(@PathVariable Long id) {
-        Optional<ReadWorkoutDto> deletedWorkout = workoutService.delete(id);
-        if (deletedWorkout.isPresent()) {
-            return ResponseEntity.ok(deletedWorkout.get());
-        }
-        else {
-            return ResponseEntity.notFound().build();
-        }
+    public ReadWorkoutDto deleteWorkout(@PathVariable Long id) {
+        return workoutService.delete(id);
     }
 }
