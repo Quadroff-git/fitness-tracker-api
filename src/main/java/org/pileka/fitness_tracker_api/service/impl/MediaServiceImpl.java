@@ -1,14 +1,16 @@
 package org.pileka.fitness_tracker_api.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.pileka.fitness_tracker_api.domain.Media;
 import org.pileka.fitness_tracker_api.dto.media.MediaDto;
 import org.pileka.fitness_tracker_api.mapper.MediaMapper;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.repository.MediaRepository;
 import org.pileka.fitness_tracker_api.security.AuthUserUtil;
 import org.pileka.fitness_tracker_api.service.MediaService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -18,12 +20,33 @@ public class MediaServiceImpl implements MediaService {
     private final UserRepository userRepository;
     private final MediaMapper mediaMapper;
 
-    public MediaDto create(MediaDto createDto) {
-        Media newMedia = mediaMapper.toModel(createDto,
-                userRepository.findByUsername(
-                        AuthUserUtil.getCurrentUser().getUsername()
-                ).get());
+    @Value("${media.max-file-size}")
+    private int MAX_FILE_SIZE;
 
-        return mediaMapper.toDto(mediaRepository.save(newMedia));
+    public void create(MediaDto createDto) {
+        if (createDto.isEmpty()) {
+            throw new IllegalArgumentException("No file uploaded or the uploaded file has no content");
+        }
+
+        if (!createDto.getType().startsWith("image")) {
+            throw new IllegalArgumentException("File must be an image");
+        }
+
+        if (createDto.getSize() > MAX_FILE_SIZE) {
+            throw new IllegalArgumentException("File size must not exceed " + MAX_FILE_SIZE + " bytes");
+        }
+
+        try {
+            mediaRepository.save(
+                    mediaMapper.toModel(
+                            createDto,
+                            userRepository.findByUsername(
+                                    AuthUserUtil.getCurrentUser().getUsername()
+                            ).get()
+                    )
+            );
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
