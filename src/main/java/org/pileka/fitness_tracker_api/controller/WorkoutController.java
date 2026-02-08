@@ -42,7 +42,7 @@ public interface WorkoutController {
                     @ApiResponse(description = "The workout"),
                     @ApiResponse(responseCode = "404", description = "Workout not found")}
     )
-    ResponseEntity<ReadWorkoutDto> getWorkoutById(@PathVariable Long id);
+    ReadWorkoutDto getWorkoutById(@PathVariable Long id);
 
     @PostMapping(produces = "application/json")
     @Operation(summary = "Add workout",
@@ -62,7 +62,7 @@ public interface WorkoutController {
                     @ApiResponse(description = "The updated workout"),
                     @ApiResponse(responseCode = "404", description = "Workout not found")}
     )
-    ResponseEntity<ReadWorkoutDto> updateWorkout(@PathVariable Long id,
+    ReadWorkoutDto updateWorkout(@PathVariable Long id,
                                                  @Valid @RequestBody CreateUpdateWorkoutDto updateDto);
 
     @DeleteMapping(path = "/{id}", produces = "application/json")
@@ -74,5 +74,5 @@ public interface WorkoutController {
                     @ApiResponse(description = "The deleted workout"),
                     @ApiResponse(responseCode = "404", description = "Workout not found")}
     )
-    ResponseEntity<ReadWorkoutDto> deleteWorkout(@PathVariable Long id);
+    ReadWorkoutDto deleteWorkout(@PathVariable Long id);
 }
