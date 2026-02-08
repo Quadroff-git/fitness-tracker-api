@@ -2,6 +2,7 @@ package org.pileka.fitness_tracker_api.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.pileka.fitness_tracker_api.dto.media.MediaDto;
+import org.pileka.fitness_tracker_api.exception.InvalidFileUploadedException;
 import org.pileka.fitness_tracker_api.mapper.MediaMapper;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.repository.MediaRepository;
@@ -25,15 +26,15 @@ public class MediaServiceImpl implements MediaService {
 
     public void create(MediaDto createDto) {
         if (createDto.isEmpty()) {
-            throw new IllegalArgumentException("No file uploaded or the uploaded file has no content");
+            throw new InvalidFileUploadedException("No file uploaded or the uploaded file has no content");
         }
 
         if (!createDto.getType().startsWith("image")) {
-            throw new IllegalArgumentException("File must be an image");
+            throw new InvalidFileUploadedException("File must be an image");
         }
 
         if (createDto.getSize() > MAX_FILE_SIZE) {
-            throw new IllegalArgumentException("File size must not exceed " + MAX_FILE_SIZE + " bytes");
+            throw new InvalidFileUploadedException("File size must not exceed " + MAX_FILE_SIZE + " bytes");
         }
 
         try {
