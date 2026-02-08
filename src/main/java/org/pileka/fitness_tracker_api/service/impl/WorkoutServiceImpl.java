@@ -10,6 +10,7 @@ import org.pileka.fitness_tracker_api.mapper.WorkoutMapper;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.repository.WorkoutRepository;
 import org.pileka.fitness_tracker_api.repository.specification.WorkoutSpecs;
+import org.pileka.fitness_tracker_api.security.AuthUserUtil;
 import org.pileka.fitness_tracker_api.service.WorkoutService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,15 +29,20 @@ public class WorkoutServiceImpl implements WorkoutService {
     private final WorkoutMapper workoutMapper;
 
     @Override
-    public ReadWorkoutDto create(CreateUpdateWorkoutDto createDto, UserDetails userDetails) {
-        Workout newWorkout = workoutMapper.toModel(createDto, userRepository.findByUsername(userDetails.getUsername()).get());
+    public ReadWorkoutDto create(CreateUpdateWorkoutDto createDto) {
+        Workout newWorkout = workoutMapper.toModel(createDto,
+                userRepository.findByUsername(
+                        AuthUserUtil.getCurrentUser().getUsername()
+                ).get());
 
         return workoutMapper.toDto(workoutRepository.save(newWorkout));
     }
 
     @Override
-    public Optional<ReadWorkoutDto> findById(Long id, UserDetails userDetails) {
+    public Optional<ReadWorkoutDto> findById(Long id) {
         Optional<Workout> workoutAtId = workoutRepository.findById(id);
+        UserDetails userDetails = AuthUserUtil.getCurrentUser();
+
         if (workoutAtId.isPresent()) {
             if (workoutAtId.get().getUser().getUsername().equals(userDetails.getUsername())) {
                 return Optional.ofNullable(workoutMapper.toDto(workoutAtId.get()));
@@ -52,15 +58,16 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public List<ReadWorkoutDto> findAll(UserDetails userDetails,
-                                        Optional<WorkoutType> type,
+    public List<ReadWorkoutDto> findAll(Optional<WorkoutType> type,
                                         Optional<LocalDate> startDate,
                                         Optional<LocalDate> endDate,
                                         Optional<Integer> minDuration,
                                         Optional<Integer> maxDuration) {
         return workoutRepository.findAll(
                 WorkoutSpecs.getFullSpec(
-                    userRepository.findByUsername(userDetails.getUsername()).get(),
+                    userRepository.findByUsername(
+                            AuthUserUtil.getCurrentUser().getUsername()
+                    ).get(),
                     type,
                     startDate,
                     endDate,
@@ -71,8 +78,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Page<ReadWorkoutDto> findAll(UserDetails userDetails,
-                                        Optional<WorkoutType> type,
+    public Page<ReadWorkoutDto> findAll(Optional<WorkoutType> type,
                                         Optional<LocalDate> startDate,
                                         Optional<LocalDate> endDate,
                                         Optional<Integer> minDuration,
@@ -80,7 +86,9 @@ public class WorkoutServiceImpl implements WorkoutService {
                                         Pageable pageable) {
         return workoutRepository.findAll(
                 WorkoutSpecs.getFullSpec(
-                        userRepository.findByUsername(userDetails.getUsername()).get(),
+                        userRepository.findByUsername(
+                                AuthUserUtil.getCurrentUser().getUsername()
+                        ).get(),
                         type,
                         startDate,
                         endDate,
@@ -92,8 +100,10 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Optional<ReadWorkoutDto> update(Long id, UserDetails userDetails, CreateUpdateWorkoutDto updateDto) {
+    public Optional<ReadWorkoutDto> update(Long id, CreateUpdateWorkoutDto updateDto) {
         Optional<Workout> workoutAtId = workoutRepository.findById(id);
+        UserDetails userDetails = AuthUserUtil.getCurrentUser();
+
         if (workoutAtId.isPresent()) {
             if (workoutAtId.get().getUser().getUsername().equals(userDetails.getUsername())) {
                 Workout workout = workoutAtId.get();
@@ -115,8 +125,10 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Optional<ReadWorkoutDto> delete(Long id, UserDetails userDetails) {
+    public Optional<ReadWorkoutDto> delete(Long id) {
         Optional<Workout> optionalWorkout = workoutRepository.findById(id);
+        UserDetails userDetails = AuthUserUtil.getCurrentUser();
+
         if (optionalWorkout.isPresent()) {
             if (optionalWorkout.get().getUser().getUsername().equals(userDetails.getUsername())){
                 workoutRepository.delete(optionalWorkout.get());
