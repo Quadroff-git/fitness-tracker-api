@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.ReadWorkoutDto;
+import org.pileka.fitness_tracker_api.dto.workout.WorkoutSpecDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -27,11 +28,7 @@ public interface WorkoutController {
                     "doesn't register",
             responses = {@ApiResponse(description = "Workouts")}
     )
-    Page<ReadWorkoutDto> getWorkouts(@RequestParam Optional<WorkoutType> type,
-                                     @RequestParam Optional<LocalDate> startDate,
-                                     @RequestParam Optional<LocalDate> endDate,
-                                     @RequestParam Optional<Integer> minDuration,
-                                     @RequestParam Optional<Integer> maxDuration,
+    Page<ReadWorkoutDto> getWorkouts(WorkoutSpecDto specDto,
                                      @PageableDefault(size = 20, sort = "date", direction = Sort.Direction.DESC) Pageable pageable);
 
     @GetMapping(path = "/{id}", produces = "application/json")
