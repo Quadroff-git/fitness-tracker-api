@@ -3,9 +3,9 @@ package org.pileka.fitness_tracker_api.controller.impl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.pileka.fitness_tracker_api.controller.WorkoutController;
-import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.ReadWorkoutDto;
+import org.pileka.fitness_tracker_api.dto.workout.WorkoutSpecDto;
 import org.pileka.fitness_tracker_api.service.WorkoutService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +14,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.Optional;
 
 @RestController
@@ -26,18 +25,9 @@ public class WorkoutControllerImpl implements WorkoutController {
 
     @GetMapping(produces = "application/json")
     @Override
-    public Page<ReadWorkoutDto> getWorkouts(@RequestParam Optional<WorkoutType> type,
-                                     @RequestParam Optional<LocalDate> startDate,
-                                     @RequestParam Optional<LocalDate> endDate,
-                                     @RequestParam Optional<Integer> minDuration,
-                                     @RequestParam Optional<Integer> maxDuration,
-                                     @PageableDefault(size = 20, sort = "date", direction = Sort.Direction.DESC) Pageable pageable) {
-        return workoutService.findAll(type,
-                startDate,
-                endDate,
-                minDuration,
-                maxDuration,
-                pageable);
+    public Page<ReadWorkoutDto> getWorkouts(@Valid WorkoutSpecDto workoutSpecDto,
+                                            @PageableDefault(size = 20, sort = "date", direction = Sort.Direction.DESC) Pageable pageable) {
+        return workoutService.findAll(workoutSpecDto, pageable);
     }
 
     @GetMapping(path = "/{id}", produces = "application/json")

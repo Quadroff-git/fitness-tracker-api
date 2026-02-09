@@ -3,6 +3,7 @@ package org.pileka.fitness_tracker_api.service;
 import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.ReadWorkoutDto;
+import org.pileka.fitness_tracker_api.dto.workout.WorkoutSpecDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,39 +32,13 @@ public interface WorkoutService {
     public Optional<ReadWorkoutDto> findById(Long id);
 
     /**
-     * Get userDetails's workouts, optionally according to some filters
-     *
-     * @param type string representing one of the WorkoutType values
-     * @param startDate start of the date interval
-     * @param endDate end of the date interval
-     * @param minDuration minimum workout duration
-     * @param maxDuration maximum workout duration
-     * @return List of workout DTOs that fit the filters
-     */
-    // Using Optional in parameters because that's what we get from the request in the controllers
-    public List<ReadWorkoutDto> findAll(Optional<WorkoutType> type,
-                                        Optional<LocalDate> startDate,
-                                        Optional<LocalDate> endDate,
-                                        Optional<Integer> minDuration,
-                                        Optional<Integer> maxDuration);
-
-    /**
      * Get user's workouts with pagination, optionally according to filters
      *
-     * @param type string representing one of the WorkoutType values
-     * @param startDate start of the date interval
-     * @param endDate end of the date interval
-     * @param minDuration minimum workout duration
-     * @param maxDuration maximum workout duration
+     * @param specDto search specification dto
      * @param pageable pagination configuration
      * @return Page of workout DTOs that fit the filters
      */
-    Page<ReadWorkoutDto> findAll(Optional<WorkoutType> type,
-                                        Optional<LocalDate> startDate,
-                                        Optional<LocalDate> endDate,
-                                        Optional<Integer> minDuration,
-                                        Optional<Integer> maxDuration,
-                                        Pageable pageable);
+    Page<ReadWorkoutDto> findAll(WorkoutSpecDto specDto, Pageable pageable);
 
     /**
      * Update user's workout by id
