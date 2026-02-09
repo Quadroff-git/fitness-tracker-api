@@ -50,6 +50,6 @@ public class AuthControllerImpl implements AuthController {
                 .build();
 
         return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-                .body(new LoginRefreshResponseDto(tokenDto.getBearerToken(), tokenDto.getAccessTokenExpiration() / 100));
+                .body(new LoginRefreshResponseDto(tokenDto.getBearerToken(), tokenDto.getAccessTokenExpiration() / 1000));
     }
 }
