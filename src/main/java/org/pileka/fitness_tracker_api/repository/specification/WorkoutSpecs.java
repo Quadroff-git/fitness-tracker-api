@@ -3,6 +3,7 @@ package org.pileka.fitness_tracker_api.repository.specification;
 import org.pileka.fitness_tracker_api.domain.User;
 import org.pileka.fitness_tracker_api.domain.Workout;
 import org.pileka.fitness_tracker_api.domain.WorkoutType;
+import org.pileka.fitness_tracker_api.dto.workout.WorkoutSpecDto;
 import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.data.jpa.domain.Specification;
 
@@ -39,27 +40,23 @@ public class WorkoutSpecs {
         return (from, query, builder) -> builder.lessThanOrEqualTo(from.get("duration"), duration);
     }
 
-    public static Specification<Workout> getFullSpec(User user,
-                                                              Optional<WorkoutType> type,
-                                                              Optional<LocalDate> startDate,
-                                                              Optional<LocalDate> endDate,
-                                                              Optional<Integer> minDuration,
-                                                              Optional<Integer> maxDuration) {
+    public static Specification<Workout> getFullSpec(User user, WorkoutSpecDto specDto) {
         Specification<Workout> predicate = belongsToUser(user);
-        if (type.isPresent()) {
-            predicate = predicate.and(isOfType(type.get()));
+
+        if (specDto.getType() != null) {
+            predicate = predicate.and(isOfType(specDto.getType()));
         }
-        if (startDate.isPresent()) {
-            predicate = predicate.and(happenedAfter(startDate.get()));
+        if (specDto.getStartDate() != null) {
+            predicate = predicate.and(happenedAfter(specDto.getStartDate()));
         }
-        if (endDate.isPresent()) {
-            predicate = predicate.and(happenedBefore(endDate.get()));
+        if (specDto.getEndDate() != null) {
+            predicate = predicate.and(happenedBefore(specDto.getEndDate()));
         }
-        if (minDuration.isPresent()) {
-            predicate = predicate.and(isLongerThan(minDuration.get()));
+        if (specDto.getMinDuration() != null) {
+            predicate = predicate.and(isLongerThan(specDto.getMinDuration()));
         }
-        if (maxDuration.isPresent()) {
-            predicate = predicate.and(isShorterThan(maxDuration.get()));
+        if (specDto.getMaxDuration() != null) {
+            predicate = predicate.and(isShorterThan(specDto.getMaxDuration()));
         }
 
         return predicate;
