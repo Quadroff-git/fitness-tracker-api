@@ -1,17 +1,25 @@
 package org.pileka.fitness_tracker_api;
 
 import lombok.experimental.UtilityClass;
+import org.mockito.MockedStatic;
 import org.pileka.fitness_tracker_api.domain.User;
 import org.pileka.fitness_tracker_api.domain.Workout;
 import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
+import org.pileka.fitness_tracker_api.dto.workout.WorkoutSpecDto;
+import org.pileka.fitness_tracker_api.security.AuthUserUtil;
 import org.pileka.fitness_tracker_api.security.CustomUserDetails;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Supplier;
+
+import static org.mockito.Mockito.mockStatic;
 
 @UtilityClass
 public class TestUtil {
@@ -25,6 +33,62 @@ public class TestUtil {
 
     public final UserDetails testUserDetails = new CustomUserDetails(USERNAME, "password");
 
+    // Very ugly anonymous Pageable implementation, but i'm too lazy to mock it
+    public final Pageable testPageable = new Pageable() {
+        @Override
+        public int getPageNumber() {
+            return 0;
+        }
+
+        @Override
+        public int getPageSize() {
+            return 0;
+        }
+
+        @Override
+        public long getOffset() {
+            return 0;
+        }
+
+        @Override
+        public Sort getSort() {
+            return null;
+        }
+
+        @Override
+        public Pageable next() {
+            return null;
+        }
+
+        @Override
+        public Pageable previousOrFirst() {
+            return null;
+        }
+
+        @Override
+        public Pageable first() {
+            return null;
+        }
+
+        @Override
+        public Pageable withPage(int pageNumber) {
+            return null;
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return false;
+        }
+    };
+
+    public final WorkoutSpecDto testWorkoutSpecDto = new WorkoutSpecDto(
+            WorkoutType.RUNNING,
+            LocalDate.of(2025, 1, 1),
+            LocalDate.of(2025, 1, 2),
+            30,
+                        60
+    );
+
     public Workout getTestWorkout() {
         Workout workout = new Workout();
         workout.setId(WORKOUT_ID);
@@ -36,6 +100,17 @@ public class TestUtil {
         workout.setUser(testUser);
 
         return workout;
+    }
+
+    public CreateUpdateWorkoutDto getTestCreateUpdateWorkoutDto() {
+        CreateUpdateWorkoutDto dto = new CreateUpdateWorkoutDto();
+        dto.setName("Morning run");
+        dto.setType(WorkoutType.RUNNING);
+        dto.setDate(LocalDate.of(2024, 1, 1));
+        dto.setDuration(30);
+        dto.setCalories(300);
+
+        return dto;
     }
 
     private Workout getTestWorkout(int i) {
@@ -62,16 +137,16 @@ public class TestUtil {
         return workouts;
     }
 
-    public CreateUpdateWorkoutDto getTestCreateUpdateWorkoutDto() {
-        CreateUpdateWorkoutDto dto = new CreateUpdateWorkoutDto();
-        dto.setName("Morning run");
-        dto.setType(WorkoutType.RUNNING);
-        dto.setDate(LocalDate.of(2024, 1, 1));
-        dto.setDuration(30);
-        dto.setCalories(300);
+    public static <T> T doWithMockedAuthUserUtil(Supplier<T> testCode) {
+        try (MockedStatic<AuthUserUtil> authUserUtilMock = mockStatic(AuthUserUtil.class)) {
+            authUserUtilMock.when(AuthUserUtil::getCurrentUser).thenReturn(testUserDetails);
 
-        return dto;
+            T result = testCode.get();
+
+            authUserUtilMock.verify(AuthUserUtil::getCurrentUser);
+
+            return result;
+        }
     }
-
 
 }
