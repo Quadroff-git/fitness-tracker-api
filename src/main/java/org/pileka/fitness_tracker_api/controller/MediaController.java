@@ -3,8 +3,6 @@ package org.pileka.fitness_tracker_api.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,5 +14,5 @@ public interface MediaController {
             responses = {@ApiResponse(description = "Success message")}
     )
     @PostMapping(produces = "plain/text", consumes="multipart/form-data")
-    ResponseEntity<String> addMedia(@RequestParam MultipartFile image);
+    ResponseEntity<String> addMedia(@RequestParam MultipartFile file);
 }
