@@ -3,14 +3,13 @@ package org.pileka.fitness_tracker_api.controller.impl;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.pileka.fitness_tracker_api.controller.AuthController;
+import org.pileka.fitness_tracker_api.controller.CookieUtil;
 import org.pileka.fitness_tracker_api.dto.auth.LoginRefreshResponseDto;
 import org.pileka.fitness_tracker_api.dto.auth.LoginRequestDto;
 import org.pileka.fitness_tracker_api.dto.auth.TokenDto;
 import org.pileka.fitness_tracker_api.dto.auth.RegistrationDto;
 import org.pileka.fitness_tracker_api.service.AuthService;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,15 +40,16 @@ public class AuthControllerImpl implements AuthController {
     }
 
     private ResponseEntity<LoginRefreshResponseDto> getResponseFromTokenDto(TokenDto tokenDto) {
-        ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", tokenDto.getRefreshToken())
-                .httpOnly(true)
-                .secure(true)
-                .path("/api/auth/refresh")
-                .maxAge(tokenDto.getRefreshTokenExpiration() / 1000)
-                .sameSite("strict")
-                .build();
-
-        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-                .body(new LoginRefreshResponseDto(tokenDto.getBearerToken(), tokenDto.getAccessTokenExpiration() / 1000));
+        return ResponseEntity
+                .ok()
+                .header(HttpHeaders.SET_COOKIE,
+                        CookieUtil.getRefreshTokenCookie(
+                                tokenDto.getRefreshToken(),
+                                tokenDto.getRefreshTokenExpiration()
+                        ).toString())
+                .body(new LoginRefreshResponseDto(
+                        tokenDto.getBearerToken(),
+                        tokenDto.getAccessTokenExpiration() / 1000)
+                );
     }
 }
