@@ -11,6 +11,7 @@ import org.pileka.fitness_tracker_api.mapper.MediaMapper;
 import org.pileka.fitness_tracker_api.repository.MediaRepository;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.service.impl.MediaServiceImpl;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
@@ -37,6 +38,9 @@ class MediaServiceImplTest {
                 userRepository,
                 Mappers.getMapper(MediaMapper.class)
         );
+
+        // Setting a @Value field
+        ReflectionTestUtils.setField(mediaService, "MAX_FILE_SIZE", MAX_SIZE);
     }
 
     @Test
@@ -55,8 +59,8 @@ class MediaServiceImplTest {
 
     @Test
     void createThrowsExceptionWhenFileEmpty() {
-        MediaDto testMediaDto = getTestMediaDtoMock();
-        when(testMediaDto.isEmpty()).thenReturn(false);
+        MediaDto testMediaDto = mock(MediaDto.class);
+        when(testMediaDto.isEmpty()).thenReturn(true);
 
         assertCreateThrowsExceptionForMediaDto(testMediaDto);
     }
@@ -66,7 +70,8 @@ class MediaServiceImplTest {
         final long SIZE = 20L * 1024 * 1024; // in bytes
         assertTrue(SIZE > MAX_SIZE); // just in case
 
-        MediaDto testMediaDto = getTestMediaDtoMock();
+        MediaDto testMediaDto = mock(MediaDto.class);
+        when(testMediaDto.getType()).thenReturn("image/jpg");
         when(testMediaDto.getSize()).thenReturn(SIZE);
 
         assertCreateThrowsExceptionForMediaDto(testMediaDto);
@@ -77,7 +82,7 @@ class MediaServiceImplTest {
         final String TYPE = "application/msword";
         assertTrue(!TYPE.startsWith("image"));
 
-        MediaDto testMediaDto = getTestMediaDtoMock();
+        MediaDto testMediaDto = mock(MediaDto.class);
         when(testMediaDto.getType()).thenReturn(TYPE);
 
         assertCreateThrowsExceptionForMediaDto(testMediaDto);
@@ -87,15 +92,9 @@ class MediaServiceImplTest {
         when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(testUser));
         when(mediaRepository.save(any(Media.class))).thenReturn(getTestMedia());
 
-        doWithMockedAuthUserUtil(
-                testUserDetails,
-                () -> assertThrows(
-                        InvalidFileUploadedException.class,
-                        () -> mediaService.create(mediaDto)
-                )
-        );
+        // Method is called outside of static UserAuthUtil stubbing because it's not supposed to reach the call to it
+        assertThrows(InvalidFileUploadedException.class, () -> mediaService.create(mediaDto));
 
-        verify(userRepository).findByUsername(USERNAME);
         verify(mediaRepository, never()).save(any(Media.class));
     }
 }
