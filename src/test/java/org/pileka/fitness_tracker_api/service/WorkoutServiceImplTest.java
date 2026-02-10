@@ -84,7 +84,7 @@ class WorkoutServiceImplTest {
         when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(somebodysWorkout));
 
         doWithMockedAuthUserUtil(
-                otherUserDetails,
+                testUserDetails,
                 () -> assertThrows(EntityDoesntBelongToUserException.class,
                         () -> workoutService.findById(WORKOUT_ID)
                 )
@@ -178,7 +178,7 @@ class WorkoutServiceImplTest {
         when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(somebodysWorkout));
 
         doWithMockedAuthUserUtil(
-                otherUserDetails,
+                testUserDetails,
                 () -> assertThrows(
                         EntityDoesntBelongToUserException.class,
                         () -> workoutService.delete(WORKOUT_ID)
