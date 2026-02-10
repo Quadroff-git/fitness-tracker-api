@@ -19,6 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.pileka.fitness_tracker_api.util.UserTestUtil.*;
+import static org.pileka.fitness_tracker_api.util.AuthTestUtil.*;
 
 @ExtendWith(MockitoExtension.class)
 public class UserDetailsServiceImplTest {
@@ -28,25 +30,13 @@ public class UserDetailsServiceImplTest {
     @InjectMocks
     UserDetailsServiceImpl userDetailsService;
 
-    private User user;
-
-    private static final String USERNAME = "user";
-
-    @BeforeEach
-    void setUpTestEntities() {
-        this.user = new User();
-        this.user.setUsername(USERNAME);
-        this.user.setEmail("cool@email.com");
-        this.user.setPassword("coolpassword");
-    }
-
     @Test
     void loadUserByUsernameLoadsUserDetails() {
-        when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.ofNullable(user));
+        when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(testUser));
 
         UserDetails result = userDetailsService.loadUserByUsername(USERNAME);
 
-        assertEquals(result, user);
+        assertEquals(result, testUserDetails);
 
         verify(userRepository).findByUsername(USERNAME);
     }
