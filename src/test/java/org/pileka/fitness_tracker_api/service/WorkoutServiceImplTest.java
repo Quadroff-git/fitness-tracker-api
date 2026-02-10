@@ -94,6 +94,15 @@ class WorkoutServiceImplTest {
     }
 
     @Test
+    void findByIdReturnsEmptyOptionalWhenNoWorkoutIsFound() {
+        when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.empty());
+        doWithMockedAuthUserUtil(
+                testUserDetails,
+                () -> assertTrue(workoutService.findById(WORKOUT_ID).isEmpty())
+        );
+    }
+
+    @Test
     void updateUpdatesSuccessfullyWhenWorkoutBelongsToUser() {
         final String UPDATED_NAME = "updated name";
 
