@@ -24,8 +24,8 @@ public interface WorkoutController {
     @Operation(summary = "Get user's workouts",
             tags = {"workouts"},
             description = "Returns user's workouts with filtering by type, date and duration intervals, sorting and pagination. " +
-                    "Despite pageable being marked as required there are actually defaults defined for it which the doc generation tool" +
-                    "doesn't register",
+                    "While pageable and workoutSpecDto are marked as required, all fields of workoutSpecDto are actually optional " +
+                    "and there are defaults defined for pageable, but the doc generation tool doesn't register this.",
             responses = {@ApiResponse(description = "Workouts")}
     )
     Page<ReadWorkoutDto> getWorkouts(WorkoutSpecDto specDto,
