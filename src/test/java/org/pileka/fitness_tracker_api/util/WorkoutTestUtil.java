@@ -1,37 +1,24 @@
-package org.pileka.fitness_tracker_api;
+package org.pileka.fitness_tracker_api.util;
 
 import lombok.experimental.UtilityClass;
-import org.mockito.MockedStatic;
-import org.pileka.fitness_tracker_api.domain.User;
 import org.pileka.fitness_tracker_api.domain.Workout;
 import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.WorkoutSpecDto;
-import org.pileka.fitness_tracker_api.security.AuthUserUtil;
-import org.pileka.fitness_tracker_api.security.CustomUserDetails;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Supplier;
 
-import static org.mockito.Mockito.mockStatic;
+import static org.pileka.fitness_tracker_api.util.UserTestUtil.testUser;
 
 @UtilityClass
-public class TestUtil {
-    public final String USERNAME = "username";
-    public final String ANOTHER_USERNAME = "another username";
+public class WorkoutTestUtil {
 
     public final Long WORKOUT_ID = 1L;
-
-    public final User testUser = new User(USERNAME, null, "password", null, null);
-    public final User anotherTestUser = new User(ANOTHER_USERNAME, null, "securepassword", null, null);
-
-    public final UserDetails testUserDetails = new CustomUserDetails(USERNAME, "password");
 
     // Very ugly anonymous Pageable implementation, but i'm too lazy to mock it
     public final Pageable testPageable = new Pageable() {
@@ -135,18 +122,6 @@ public class TestUtil {
         }
 
         return workouts;
-    }
-
-    public static <T> T doWithMockedAuthUserUtil(Supplier<T> testCode) {
-        try (MockedStatic<AuthUserUtil> authUserUtilMock = mockStatic(AuthUserUtil.class)) {
-            authUserUtilMock.when(AuthUserUtil::getCurrentUser).thenReturn(testUserDetails);
-
-            T result = testCode.get();
-
-            authUserUtilMock.verify(AuthUserUtil::getCurrentUser);
-
-            return result;
-        }
     }
 
 }
