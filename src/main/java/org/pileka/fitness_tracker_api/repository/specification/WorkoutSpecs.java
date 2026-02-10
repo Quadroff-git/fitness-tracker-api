@@ -1,42 +1,42 @@
 package org.pileka.fitness_tracker_api.repository.specification;
 
+import lombok.experimental.UtilityClass;
 import org.pileka.fitness_tracker_api.domain.User;
 import org.pileka.fitness_tracker_api.domain.Workout;
 import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import org.pileka.fitness_tracker_api.dto.workout.WorkoutSpecDto;
-import org.springframework.data.jpa.domain.PredicateSpecification;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.time.LocalDate;
-import java.util.Optional;
 
 /**
  * A convenience class for getting specification objects without the service interacting with Spring Data-specific API
  * All intervals are inclusive on both ends
  */
+@UtilityClass
 public class WorkoutSpecs {
 
-    public static Specification<Workout> belongsToUser(User user) {
+    public Specification<Workout> belongsToUser(User user) {
         return (from, query, builder) -> builder.equal(from.get("user"), user);
     }
 
-    public static Specification<Workout> isOfType(WorkoutType type) {
+    public Specification<Workout> isOfType(WorkoutType type) {
         return (from, query, builder) -> builder.equal(from.get("type"), type);
     }
 
-    public static Specification<Workout> happenedAfter(LocalDate date) {
+    public Specification<Workout> happenedAfter(LocalDate date) {
         return (from, query, builder) -> builder.greaterThanOrEqualTo(from.get("date"), date);
     }
 
-    public static Specification<Workout> happenedBefore(LocalDate date) {
+    public Specification<Workout> happenedBefore(LocalDate date) {
         return (from, query, builder) -> builder.lessThanOrEqualTo(from.get("date"), date);
     }
 
-    public static Specification<Workout> isLongerThan(Integer duration) {
+    public Specification<Workout> isLongerThan(Integer duration) {
         return (from, query, builder) -> builder.greaterThanOrEqualTo(from.get("duration"), duration);
     }
 
-    public static Specification<Workout> isShorterThan(Integer duration) {
+    public Specification<Workout> isShorterThan(Integer duration) {
         return (from, query, builder) -> builder.lessThanOrEqualTo(from.get("duration"), duration);
     }
 

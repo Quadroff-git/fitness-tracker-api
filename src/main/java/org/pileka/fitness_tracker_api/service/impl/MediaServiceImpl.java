@@ -22,7 +22,7 @@ public class MediaServiceImpl implements MediaService {
     private final MediaMapper mediaMapper;
 
     @Value("${media.max-file-size}")
-    private int MAX_FILE_SIZE;
+    private long MAX_FILE_SIZE;
 
     public void create(MediaDto createDto) {
         if (createDto.isEmpty()) {

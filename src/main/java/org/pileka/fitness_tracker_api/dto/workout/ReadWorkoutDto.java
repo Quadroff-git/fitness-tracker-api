@@ -20,7 +20,7 @@ public class ReadWorkoutDto {
 
     private LocalDate date;
 
-    private Integer duration; // в минутах
+    private Integer duration;
 
     private Integer calories;
 

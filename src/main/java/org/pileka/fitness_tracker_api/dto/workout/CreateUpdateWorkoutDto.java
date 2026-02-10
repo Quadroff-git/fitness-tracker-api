@@ -26,7 +26,7 @@ public class CreateUpdateWorkoutDto {
 
     @NotNull(message = "Duration is required")
     @Positive(message = "Duration must be greater than 0")
-    private Integer duration; // в минутах
+    private Integer duration;
 
     @NotNull(message = "Calories burned is required")
     @Positive(message = "Calories burned must be greater than 0")
