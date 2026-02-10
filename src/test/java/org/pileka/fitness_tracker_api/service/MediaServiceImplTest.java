@@ -19,9 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.pileka.fitness_tracker_api.util.MediaTestUtil.*;
-import static org.pileka.fitness_tracker_api.util.UserTestUtil.USERNAME;
-import static org.pileka.fitness_tracker_api.util.UserTestUtil.testUser;
-import static org.pileka.fitness_tracker_api.util.AuthTestUtil.doWithMockedAuthUserUtil;
+import static org.pileka.fitness_tracker_api.util.UserTestUtil.*;
+import static org.pileka.fitness_tracker_api.util.AuthTestUtil.*;
 
 @ExtendWith(MockitoExtension.class)
 class MediaServiceImplTest {
@@ -41,11 +40,14 @@ class MediaServiceImplTest {
     }
 
     @Test
-    void createWithUserDetailsSavesMedia() {
+    void createSavesMedia() {
         when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(testUser));
         when(mediaRepository.save(any(Media.class))).thenReturn(getTestMedia());
 
-        doWithMockedAuthUserUtil(() -> mediaService.create(getTestMediaDtoMock()));
+        doWithMockedAuthUserUtil(
+                testUserDetails,
+                () -> mediaService.create(getTestMediaDtoMock())
+        );
 
         verify(userRepository).findByUsername(USERNAME);
         verify(mediaRepository).save(any(Media.class));
@@ -85,9 +87,11 @@ class MediaServiceImplTest {
         when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(testUser));
         when(mediaRepository.save(any(Media.class))).thenReturn(getTestMedia());
 
-        doWithMockedAuthUserUtil(() ->
-                assertThrows(InvalidFileUploadedException.class, () ->
-                        mediaService.create(mediaDto)
+        doWithMockedAuthUserUtil(
+                testUserDetails,
+                () -> assertThrows(
+                        InvalidFileUploadedException.class,
+                        () -> mediaService.create(mediaDto)
                 )
         );
 

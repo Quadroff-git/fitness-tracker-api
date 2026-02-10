@@ -17,6 +17,7 @@ import static org.pileka.fitness_tracker_api.util.UserTestUtil.*;
 @UtilityClass
 public class AuthTestUtil {
     public final UserDetails testUserDetails = new CustomUserDetails(USERNAME, PASSWORD);
+    public final UserDetails otherUserDetails = new CustomUserDetails(ANOTHER_USERNAME, "another password");
 
     public final String BEARER_TOKEN = "bearer token";
     public final String REFRESH_TOKEN = "refresh token";
@@ -27,9 +28,9 @@ public class AuthTestUtil {
     public final RegistrationDto testRegistrationDto = new RegistrationDto(USERNAME, PASSWORD, "cool@email.com");
     public final TokenDto testTokenDto = new TokenDto(BEARER_TOKEN, BEARER_TOKEN_EXPIRATION, REFRESH_TOKEN, REFRESH_TOKEN_EXPIRATION);
 
-    public static <T> T doWithMockedAuthUserUtil(Supplier<T> testCode) {
+    public static <T> T doWithMockedAuthUserUtil(UserDetails userDetails, Supplier<T> testCode) {
         try (MockedStatic<AuthUserUtil> authUserUtilMock = mockStatic(AuthUserUtil.class)) {
-            authUserUtilMock.when(AuthUserUtil::getCurrentUser).thenReturn(testUserDetails);
+            authUserUtilMock.when(AuthUserUtil::getCurrentUser).thenReturn(userDetails);
 
             T result = testCode.get();
 
@@ -39,9 +40,9 @@ public class AuthTestUtil {
         }
     }
 
-    public static void doWithMockedAuthUserUtil(Runnable testCode) {
+    public static void doWithMockedAuthUserUtil(UserDetails userDetails, Runnable testCode) {
         try (MockedStatic<AuthUserUtil> authUserUtilMock = mockStatic(AuthUserUtil.class)) {
-            authUserUtilMock.when(AuthUserUtil::getCurrentUser).thenReturn(testUserDetails);
+            authUserUtilMock.when(AuthUserUtil::getCurrentUser).thenReturn(userDetails);
 
             testCode.run();
 
