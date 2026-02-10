@@ -39,4 +39,14 @@ public class AuthTestUtil {
             return result;
         }
     }
+
+    public static void doWithMockedAuthUserUtil(Runnable testCode) {
+        try (MockedStatic<AuthUserUtil> authUserUtilMock = mockStatic(AuthUserUtil.class)) {
+            authUserUtilMock.when(AuthUserUtil::getCurrentUser).thenReturn(testUserDetails);
+
+            testCode.run();
+
+            authUserUtilMock.verify(AuthUserUtil::getCurrentUser);
+        }
+    }
 }
