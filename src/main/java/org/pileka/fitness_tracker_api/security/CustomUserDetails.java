@@ -1,6 +1,7 @@
 package org.pileka.fitness_tracker_api.security;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import org.jspecify.annotations.NullMarked;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
@@ -11,6 +12,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 @AllArgsConstructor
+@EqualsAndHashCode
 public class CustomUserDetails implements UserDetails {
 
     private String username;
