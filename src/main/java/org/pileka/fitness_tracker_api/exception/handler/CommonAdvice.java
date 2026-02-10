@@ -49,7 +49,7 @@ public class CommonAdvice {
 
     @ExceptionHandler({HttpMessageNotReadableException.class, InvalidFileUploadedException.class})
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleGenericBadRequest(HttpMessageNotReadableException e) {
+    public ErrorResponse handleGenericBadRequest(RuntimeException e) {
         return ErrorResponse.create(e, HttpStatus.BAD_REQUEST, "Bad request: " + e.getMessage());
     }
 
