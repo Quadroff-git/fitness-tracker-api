@@ -9,7 +9,6 @@ import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import java.time.LocalDate;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReadWorkoutDto {

@@ -1,38 +1,31 @@
 package org.pileka.fitness_tracker_api.service;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mapstruct.factory.Mappers;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.modelmapper.ModelMapper;
-import org.pileka.fitness_tracker_api.domain.User;
 import org.pileka.fitness_tracker_api.domain.Workout;
-import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.ReadWorkoutDto;
 import org.pileka.fitness_tracker_api.exception.EntityDoesntBelongToUserException;
 import org.pileka.fitness_tracker_api.mapper.WorkoutMapper;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.repository.WorkoutRepository;
-import org.pileka.fitness_tracker_api.security.CustomUserDetails;
 import org.pileka.fitness_tracker_api.service.impl.WorkoutServiceImpl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.pileka.fitness_tracker_api.util.AuthTestUtil.*;
+import static org.pileka.fitness_tracker_api.util.UserTestUtil.*;
+import static org.pileka.fitness_tracker_api.util.WorkoutTestUtil.*;
 
 @ExtendWith(MockitoExtension.class)
 class WorkoutServiceImplTest {
@@ -43,65 +36,25 @@ class WorkoutServiceImplTest {
 
     WorkoutServiceImpl workoutService;
 
-    private User testUser;
-    private UserDetails testUserDetails;
-    private User differentUser;
-    private Workout testWorkout;
-    private CreateUpdateWorkoutDto testCreateUpdateDto;
-
-    private static final Long WORKOUT_ID = 1L;
-    private static final String USERNAME = "testuser";
-    private static final String DIFFERENT_USERNAME = "differentuser";
-
-    WorkoutServiceImplTest() {
+    public WorkoutServiceImplTest() {
         this.workoutRepository = mock(WorkoutRepository.class);
         this.userRepository = mock(UserRepository.class);
 
-        this.workoutService = new WorkoutServiceImpl(workoutRepository, userRepository, Mappers.getMapper(WorkoutMapper.class));
-    }
-
-    @BeforeEach
-    void setUpTestEntities() {
-        testUser = new User();
-        testUser.setId(1L);
-        testUser.setUsername(USERNAME);
-        testUser.setEmail("test@example.com");
-        testUser.setPassword("encodedPassword");
-
-        testUserDetails = new CustomUserDetails(testUser.getUsername(), testUser.getPassword());
-
-        differentUser = new User();
-        differentUser.setId(2L);
-        differentUser.setUsername(DIFFERENT_USERNAME);
-        differentUser.setEmail("different@example.com");
-        differentUser.setPassword("password");
-
-        testWorkout = new Workout();
-        testWorkout.setId(WORKOUT_ID);
-        testWorkout.setName("Morning Run");
-        testWorkout.setType(WorkoutType.CARDIO);
-        testWorkout.setDate(LocalDate.of(2024, 1, 1));
-        testWorkout.setDuration(30);
-        testWorkout.setCalories(300);
-        testWorkout.setUser(testUser);
-
-        testCreateUpdateDto = CreateUpdateWorkoutDto.builder()
-                .name("Morning Run")
-                .type(WorkoutType.CARDIO)
-                .date(LocalDate.of(2024, 1, 1))
-                .duration(30)
-                .calories(300)
-                .build();
+        this.workoutService = new WorkoutServiceImpl(workoutRepository,
+                userRepository,
+                Mappers.getMapper(WorkoutMapper.class));
     }
 
     @Test
-    void createWithUserDetailsReturnsWorkoutDto() {
+    void createReturnsWorkoutDto() {
         when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(testUser));
-        when(workoutRepository.save(any(Workout.class))).thenReturn(testWorkout);
+        when(workoutRepository.save(any(Workout.class))).thenReturn(getTestWorkout());
 
-        ReadWorkoutDto result = workoutService.create(testCreateUpdateDto, testUserDetails);
-
-        assertReadDtoEqualsWorkout(result, testWorkout);
+        ReadWorkoutDto result = doWithMockedAuthUserUtil(
+                testUserDetails,
+                () -> workoutService.create(getTestCreateUpdateWorkoutDto())
+        );
+        assertReadDtoEqualsWorkout(result, getTestWorkout());
 
         verify(userRepository).findByUsername(USERNAME);
         verify(workoutRepository).save(any(Workout.class));
@@ -109,40 +62,63 @@ class WorkoutServiceImplTest {
 
     @Test
     void findByIdReturnsWorkoutDtoWhenWorkoutBelongsToUser() {
-        when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(testWorkout));
+        when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(getTestWorkout()));
 
-        Optional<ReadWorkoutDto> result = workoutService.findById(WORKOUT_ID, testUserDetails);
+        Optional<ReadWorkoutDto> result = doWithMockedAuthUserUtil(
+                testUserDetails,
+                () -> workoutService.findById(WORKOUT_ID)
+        );
 
         assertTrue(result.isPresent());
         ReadWorkoutDto dto = result.get();
 
-        assertReadDtoEqualsWorkout(dto, testWorkout);
+        assertReadDtoEqualsWorkout(dto, getTestWorkout());
+        verify(workoutRepository).findById(WORKOUT_ID);
     }
 
     @Test
     void findByIdThrowsExceptionWhenWorkoutDoesNotBelongToUser() {
-        testWorkout.setUser(differentUser);
-        when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(testWorkout));
+        Workout somebodysWorkout = getTestWorkout();
+        somebodysWorkout.setUser(anotherTestUser);
 
-        assertThrows(EntityDoesntBelongToUserException.class, () -> {
-            workoutService.findById(WORKOUT_ID, testUserDetails);
-        });
+        when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(somebodysWorkout));
+
+        doWithMockedAuthUserUtil(
+                testUserDetails,
+                () -> assertThrows(EntityDoesntBelongToUserException.class,
+                        () -> workoutService.findById(WORKOUT_ID)
+                )
+        );
+
+        verify(workoutRepository).findById(WORKOUT_ID);
     }
 
     @Test
-    void updateWithUserDetailsUpdatesSuccessfullyWhenWorkoutBelongsToUser() {
-        when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(testWorkout));
-        when(workoutRepository.save(any(Workout.class))).thenReturn(testWorkout);
+    void findByIdReturnsEmptyOptionalWhenNoWorkoutIsFound() {
+        when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.empty());
+        doWithMockedAuthUserUtil(
+                testUserDetails,
+                () -> assertTrue(workoutService.findById(WORKOUT_ID).isEmpty())
+        );
+    }
 
-        CreateUpdateWorkoutDto updateDto = CreateUpdateWorkoutDto.builder()
-                .name("Updated Run")
-                .type(WorkoutType.STRENGTH)
-                .date(LocalDate.of(2024, 1, 2))
-                .duration(45)
-                .calories(400)
-                .build();
+    @Test
+    void updateUpdatesSuccessfullyWhenWorkoutBelongsToUser() {
+        final String UPDATED_NAME = "updated name";
 
-        Optional<ReadWorkoutDto> result = workoutService.update(WORKOUT_ID, testUserDetails, updateDto);
+        Workout updatedWorkout = getTestWorkout();
+        updatedWorkout.setName(UPDATED_NAME);
+
+        CreateUpdateWorkoutDto updateDto = getTestCreateUpdateWorkoutDto();
+        updateDto.setName(UPDATED_NAME);
+
+        when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(getTestWorkout()));
+        when(workoutRepository.save(any(Workout.class))).thenReturn(updatedWorkout);
+
+        Optional<ReadWorkoutDto> result = doWithMockedAuthUserUtil(
+                testUserDetails,
+                () -> workoutService.update(WORKOUT_ID, updateDto)
+        );
 
         assertTrue(result.isPresent());
         ReadWorkoutDto dto = result.get();
@@ -153,22 +129,34 @@ class WorkoutServiceImplTest {
     }
 
     @Test
-    void updateWithUserDetailsThrowsExceptionWhenWorkoutDoesNotBelongToUser() {
-        testWorkout.setUser(differentUser);
-        when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(testWorkout));
+    void updateThrowsExceptionWhenWorkoutDoesNotBelongToUser() {
+        final String UPDATED_NAME = "updated name";
 
-        assertThrows(EntityDoesntBelongToUserException.class, () -> {
-            workoutService.update(WORKOUT_ID, testUserDetails, testCreateUpdateDto);
-        });
+        Workout updatedWorkout = getTestWorkout();
+        updatedWorkout.setName(UPDATED_NAME);
+
+        CreateUpdateWorkoutDto updateDto = getTestCreateUpdateWorkoutDto();
+        updateDto.setName(UPDATED_NAME);
+
+        when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(getTestWorkout()));
+
+        doWithMockedAuthUserUtil(otherUserDetails,
+                () -> assertThrows(
+                        EntityDoesntBelongToUserException.class,
+                        () -> workoutService.update(WORKOUT_ID, updateDto)
+                )
+        );
 
         verify(workoutRepository, never()).save(any(Workout.class));
     }
 
     @Test
-    void updateWithUserDetailsReturnsEmptyOptionalWhenWorkoutNotFound() {
+    void updateReturnsEmptyOptionalWhenWorkoutNotFound() {
         when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.empty());
 
-        Optional<ReadWorkoutDto> result = workoutService.update(WORKOUT_ID, testUserDetails, testCreateUpdateDto);
+        Optional<ReadWorkoutDto> result = doWithMockedAuthUserUtil(testUserDetails,
+                () -> workoutService.update(WORKOUT_ID, getTestCreateUpdateWorkoutDto())
+        );
 
         assertTrue(result.isEmpty());
         verify(workoutRepository, never()).save(any(Workout.class));
@@ -176,27 +164,35 @@ class WorkoutServiceImplTest {
 
     @Test
     void deleteDeletesSuccessfullyWhenWorkoutBelongsToUser() {
-        when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(testWorkout));
-        doNothing().when(workoutRepository).delete(testWorkout);
+        when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(getTestWorkout()));
+        doNothing().when(workoutRepository).delete(getTestWorkout());
 
-        Optional<ReadWorkoutDto> result = workoutService.delete(WORKOUT_ID, testUserDetails);
+        Optional<ReadWorkoutDto> result = doWithMockedAuthUserUtil(
+                testUserDetails,
+                () -> workoutService.delete(WORKOUT_ID)
+        );
 
         assertTrue(result.isPresent());
         ReadWorkoutDto dto = result.get();
 
-        assertReadDtoEqualsWorkout(dto, testWorkout);
+        assertReadDtoEqualsWorkout(dto, getTestWorkout());
 
-        verify(workoutRepository).delete(testWorkout);
+        verify(workoutRepository).delete(getTestWorkout());
     }
 
     @Test
     void deleteThrowsExceptionWhenWorkoutDoesNotBelongToUser() {
-        testWorkout.setUser(differentUser);
-        when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(testWorkout));
+        Workout somebodysWorkout = getTestWorkout();
+        somebodysWorkout.setUser(anotherTestUser);
+        when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.of(somebodysWorkout));
 
-        assertThrows(EntityDoesntBelongToUserException.class, () -> {
-            workoutService.delete(WORKOUT_ID, testUserDetails);
-        });
+        doWithMockedAuthUserUtil(
+                testUserDetails,
+                () -> assertThrows(
+                        EntityDoesntBelongToUserException.class,
+                        () -> workoutService.delete(WORKOUT_ID)
+                )
+        );
 
         verify(workoutRepository, never()).delete(any(Workout.class));
     }
@@ -205,102 +201,45 @@ class WorkoutServiceImplTest {
     void deleteReturnsEmptyOptionalWhenWorkoutNotFound() {
         when(workoutRepository.findById(WORKOUT_ID)).thenReturn(Optional.empty());
 
-        Optional<ReadWorkoutDto> result = workoutService.delete(WORKOUT_ID, testUserDetails);
+        Optional<ReadWorkoutDto> result = doWithMockedAuthUserUtil(
+                testUserDetails,
+                () -> workoutService.delete(WORKOUT_ID)
+        );
 
         assertTrue(result.isEmpty());
         verify(workoutRepository, never()).delete(any(Workout.class));
     }
 
     @Test
-    void findAllWithoutPageableReturnsAllFitting() {
-        final int LIST_SIZE = 5;
-        List<Workout> filteredWorkouts = getTestWorkouts(LIST_SIZE);
-
-        when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(testUser));
-        when(workoutRepository.findAll(any(Specification.class))).thenReturn(filteredWorkouts);
-
-        List<ReadWorkoutDto> result = workoutService.findAll(
-                testUserDetails,
-                Optional.of(WorkoutType.YOGA),
-                Optional.of(LocalDate.of(2024, 1, 1)),
-                Optional.of(LocalDate.of(2024, 1, 31)),
-                Optional.of(30),
-                Optional.of(90)
-        );
-
-        assertEquals(LIST_SIZE, result.size());
-        for (int i = 0; i < LIST_SIZE; i++) {
-            assertReadDtoEqualsWorkout(result.get(i), filteredWorkouts.get(i));
-        }
-    }
-
-    @Test
-    void findAllWithPageableReturnsAllFitting() {
+    void findAllReturnsAllFitting() {
         final int LIST_SIZE = 5;
         Page<Workout> filteredWorkouts = new PageImpl<>(getTestWorkouts(LIST_SIZE));
 
         when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(testUser));
         when(workoutRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(filteredWorkouts);
 
-        Page<ReadWorkoutDto> result = workoutService.findAll(
+        Page<ReadWorkoutDto> result = doWithMockedAuthUserUtil(
                 testUserDetails,
-                Optional.of(WorkoutType.YOGA),
-                Optional.of(LocalDate.of(2024, 1, 1)),
-                Optional.of(LocalDate.of(2024, 1, 31)),
-                Optional.of(30),
-                Optional.of(90),
-                new Pageable() {
-                    @Override
-                    public int getPageNumber() {
-                        return 0;
-                    }
-
-                    @Override
-                    public int getPageSize() {
-                        return 0;
-                    }
-
-                    @Override
-                    public long getOffset() {
-                        return 0;
-                    }
-
-                    @Override
-                    public Sort getSort() {
-                        return null;
-                    }
-
-                    @Override
-                    public Pageable next() {
-                        return null;
-                    }
-
-                    @Override
-                    public Pageable previousOrFirst() {
-                        return null;
-                    }
-
-                    @Override
-                    public Pageable first() {
-                        return null;
-                    }
-
-                    @Override
-                    public Pageable withPage(int pageNumber) {
-                        return null;
-                    }
-
-                    @Override
-                    public boolean hasPrevious() {
-                        return false;
-                    }
-                }
+                () -> workoutService.findAll(testWorkoutSpecDto, testPageable)
         );
 
         assertEquals(LIST_SIZE, result.getTotalElements());
         for (int i = 0; i < LIST_SIZE; i++) {
             assertReadDtoEqualsWorkout(result.stream().toList().get(i), filteredWorkouts.stream().toList().get(i));
         }
+    }
+
+    @Test
+    void findAllReturnsEmptyPageWhenNothingFits() {
+        when(userRepository.findByUsername(USERNAME)).thenReturn(Optional.of(testUser));
+        when(workoutRepository.findAll(any(Specification.class), any(Pageable.class))).thenReturn(new PageImpl<Workout>(List.of()));
+
+        Page<ReadWorkoutDto> result = doWithMockedAuthUserUtil(
+                testUserDetails,
+                () -> workoutService.findAll(testWorkoutSpecDto, testPageable)
+        );
+
+        assertTrue(result.isEmpty());
     }
 
     private void assertCreateUpdateDtoEqualsReadDto(CreateUpdateWorkoutDto createUpdateWorkoutDto, ReadWorkoutDto readWorkoutDto) {
@@ -320,29 +259,5 @@ class WorkoutServiceImplTest {
         assertEquals(readWorkoutDto.getCalories(), workout.getCalories());
         assertEquals(readWorkoutDto.getUserId(), workout.getUser().getId());
         assertEquals(readWorkoutDto.getUserUsername(), workout.getUser().getUsername());
-    }
-
-    private Workout getTestWorkout(int i) {
-        Random random = new Random();
-
-        Workout workout = new Workout();
-        workout.setId((long) i);
-        workout.setName("Test workout " + i);
-        workout.setType(WorkoutType.values()[random.nextInt(WorkoutType.values().length)]);
-        workout.setDate(LocalDate.of(2024, 1, 1 + i));
-        workout.setDuration(30 + i);
-        workout.setCalories(300 + i * 50);
-        workout.setUser(testUser);
-
-        return workout;
-    }
-
-    private List<Workout> getTestWorkouts(int n) {
-        List<Workout> workouts = new ArrayList<>();
-        for (int i = 0; i < n; i++) {
-            workouts.add(getTestWorkout(i));
-        }
-
-        return workouts;
     }
 }
