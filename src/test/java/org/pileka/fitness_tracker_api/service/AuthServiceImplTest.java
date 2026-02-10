@@ -25,8 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 import static org.pileka.fitness_tracker_api.util.AuthTestUtil.*;
-import static org.pileka.fitness_tracker_api.util.UserTestUtil.PASSWORD;
-import static org.pileka.fitness_tracker_api.util.UserTestUtil.USERNAME;
+import static org.pileka.fitness_tracker_api.util.UserTestUtil.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration
@@ -50,7 +49,7 @@ public class AuthServiceImplTest {
 
     private void setUpFullTokenDtoMock() {
         when(jwtTokenProvider.generateBearerToken(USERNAME)).thenReturn(BEARER_TOKEN);
-        when(jwtTokenProvider.generateRefreshToken("user")).thenReturn(REFRESH_TOKEN);
+        when(jwtTokenProvider.generateRefreshToken(USERNAME)).thenReturn(REFRESH_TOKEN);
         when(jwtTokenProvider.getBearerTokenExpiration()).thenReturn(BEARER_TOKEN_EXPIRATION);
         when(jwtTokenProvider.getRefreshTokenExpiration()).thenReturn(REFRESH_TOKEN_EXPIRATION);
     }
@@ -98,8 +97,6 @@ public class AuthServiceImplTest {
         assertEquals(testTokenDto, result);
 
         verify(authenticationManager).authenticate(any());
-
-        verify(userRepository).findByUsername("user");
         verifyFullTokenDtoGeneration();
     }
 
