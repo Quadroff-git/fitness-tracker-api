@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-import static org.pileka.fitness_tracker_api.util.UserTestUtil.testUser;
+import static org.pileka.fitness_tracker_api.util.UserTestUtil.*;
 
 @UtilityClass
 public class WorkoutTestUtil {

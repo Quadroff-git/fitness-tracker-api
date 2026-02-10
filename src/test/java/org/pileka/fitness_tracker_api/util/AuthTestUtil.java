@@ -12,8 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.function.Supplier;
 
 import static org.mockito.Mockito.mockStatic;
-import static org.pileka.fitness_tracker_api.util.UserTestUtil.PASSWORD;
-import static org.pileka.fitness_tracker_api.util.UserTestUtil.USERNAME;
+import static org.pileka.fitness_tracker_api.util.UserTestUtil.*;
 
 @UtilityClass
 public class AuthTestUtil {
