@@ -3,6 +3,7 @@ package org.pileka.fitness_tracker_api.service;
 import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.ReadWorkoutDto;
+import org.pileka.fitness_tracker_api.dto.workout.WorkoutSpecDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -17,78 +18,44 @@ public interface WorkoutService {
      * Create a new workout belonging to user
      *
      * @param createDto DTO containing values for the new workout
-     * @param userDetails security credentials of the user to whom the workout will belong
      * @return A DTO representing the newly created workout
      */
-    ReadWorkoutDto create(CreateUpdateWorkoutDto createDto, UserDetails userDetails);
+    ReadWorkoutDto create(CreateUpdateWorkoutDto createDto);
 
     /**
      * Get user's workout by id
      *
      * @param id workout id
-     * @param userDetails security credentials of the user to whom the workout must belong
      * @return workout DTO or null wrapped in Optional if no workout
      * with this id belonging to this userDetails is found
      * */
-    public Optional<ReadWorkoutDto> findById(Long id, UserDetails userDetails);
-
-    /**
-     * Get userDetails's workouts, optionally according to some filters
-     *
-     * @param userDetails security credentials of the user to whom the workout must belong
-     * @param type string representing one of the WorkoutType values
-     * @param startDate start of the date interval
-     * @param endDate end of the date interval
-     * @param minDuration minimum workout duration
-     * @param maxDuration maximum workout duration
-     * @return List of workout DTOs that fit the filters
-     */
-    // Using Optional in parameters because that's what we get from the request in the controllers
-    public List<ReadWorkoutDto> findAll(UserDetails userDetails,
-                                        Optional<WorkoutType> type,
-                                        Optional<LocalDate> startDate,
-                                        Optional<LocalDate> endDate,
-                                        Optional<Integer> minDuration,
-                                        Optional<Integer> maxDuration);
+    public Optional<ReadWorkoutDto> findById(Long id);
 
     /**
      * Get user's workouts with pagination, optionally according to filters
      *
-     * @param userDetails security credentials of the user to whom the workout must belong
-     * @param type string representing one of the WorkoutType values
-     * @param startDate start of the date interval
-     * @param endDate end of the date interval
-     * @param minDuration minimum workout duration
-     * @param maxDuration maximum workout duration
+     * @param specDto search specification dto
      * @param pageable pagination configuration
      * @return Page of workout DTOs that fit the filters
      */
-    Page<ReadWorkoutDto> findAll(UserDetails userDetails,
-                                        Optional<WorkoutType> type,
-                                        Optional<LocalDate> startDate,
-                                        Optional<LocalDate> endDate,
-                                        Optional<Integer> minDuration,
-                                        Optional<Integer> maxDuration,
-                                        Pageable pageable);
+    Page<ReadWorkoutDto> findAll(WorkoutSpecDto specDto, Pageable pageable);
 
     /**
      * Update user's workout by id
      *
      * @param id id of the workout to update
-     * @param userDetails security credentials of the user to whom the workout must belong
      * @param updateDto DTO containing new values for the workout
      * @return updated workout DTO or null wrapped in Optional if no workout
      * with this id belonging to this userDetails is found
      * */
-    Optional<ReadWorkoutDto> update(Long id, UserDetails userDetails, CreateUpdateWorkoutDto updateDto);
+    Optional<ReadWorkoutDto> update(Long id, CreateUpdateWorkoutDto updateDto);
 
     /**
      * Delete user's workout by id
      *
      * @param id id of the workout to delete
-     * @param userDetails security credentials of the user to whom the workout must belong
      * @return deleted workout DTO or null wrapped in Optional if no workout
      * with this id belonging to this userDetails is found
      */
-    Optional<ReadWorkoutDto> delete(Long id, UserDetails userDetails);
+    Optional<ReadWorkoutDto> delete(Long id);
 }

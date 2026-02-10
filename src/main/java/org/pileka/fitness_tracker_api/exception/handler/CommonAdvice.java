@@ -2,6 +2,7 @@ package org.pileka.fitness_tracker_api.exception.handler;
 
 import org.pileka.fitness_tracker_api.exception.EntityDoesntBelongToUserException;
 import org.pileka.fitness_tracker_api.exception.EntityRestrictionViolationException;
+import org.pileka.fitness_tracker_api.exception.InvalidFileUploadedException;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,9 +47,9 @@ public class CommonAdvice {
         return ErrorResponse.create(e, HttpStatus.CONFLICT, "Data integrity conflict: " + e.getMessage());
     }
 
-    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ExceptionHandler({HttpMessageNotReadableException.class, InvalidFileUploadedException.class})
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleGenericBadRequest(HttpMessageNotReadableException e) {
+    public ErrorResponse handleGenericBadRequest(RuntimeException e) {
         return ErrorResponse.create(e, HttpStatus.BAD_REQUEST, "Bad request: " + e.getMessage());
     }
 

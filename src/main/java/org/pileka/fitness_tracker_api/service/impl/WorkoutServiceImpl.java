@@ -1,23 +1,22 @@
 package org.pileka.fitness_tracker_api.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.modelmapper.ModelMapper;
 import org.pileka.fitness_tracker_api.domain.Workout;
-import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.ReadWorkoutDto;
+import org.pileka.fitness_tracker_api.dto.workout.WorkoutSpecDto;
 import org.pileka.fitness_tracker_api.exception.EntityDoesntBelongToUserException;
+import org.pileka.fitness_tracker_api.mapper.WorkoutMapper;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.repository.WorkoutRepository;
 import org.pileka.fitness_tracker_api.repository.specification.WorkoutSpecs;
+import org.pileka.fitness_tracker_api.security.AuthUserUtil;
 import org.pileka.fitness_tracker_api.service.WorkoutService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,23 +24,26 @@ import java.util.Optional;
 public class WorkoutServiceImpl implements WorkoutService {
     private final WorkoutRepository workoutRepository;
     private final UserRepository userRepository;
-    private final ModelMapper modelMapper;
+    private final WorkoutMapper workoutMapper;
 
     @Override
-    public ReadWorkoutDto create(CreateUpdateWorkoutDto createDto, UserDetails userDetails) {
-        // Most of the mapping is done by ModelMapper, but User is injected manually
-        Workout newWorkout = modelMapper.map(createDto, Workout.class);
-        newWorkout.setUser(userRepository.findByUsername(userDetails.getUsername()).get());
+    public ReadWorkoutDto create(CreateUpdateWorkoutDto createDto) {
+        Workout newWorkout = workoutMapper.toModel(createDto,
+                userRepository.findByUsername(
+                        AuthUserUtil.getCurrentUser().getUsername()
+                ).get());
 
-        return modelMapper.map(workoutRepository.save(newWorkout), ReadWorkoutDto.class);
+        return workoutMapper.toDto(workoutRepository.save(newWorkout));
     }
 
     @Override
-    public Optional<ReadWorkoutDto> findById(Long id, UserDetails userDetails) {
+    public Optional<ReadWorkoutDto> findById(Long id) {
         Optional<Workout> workoutAtId = workoutRepository.findById(id);
+        UserDetails userDetails = AuthUserUtil.getCurrentUser();
+
         if (workoutAtId.isPresent()) {
-            if (workoutAtId.get().getUser().equals(userDetails)) {
-                return Optional.ofNullable(modelMapper.map(workoutAtId, ReadWorkoutDto.class));
+            if (workoutAtId.get().getUser().getUsername().equals(userDetails.getUsername())) {
+                return Optional.ofNullable(workoutMapper.toDto(workoutAtId.get()));
             }
             else {
                 throw new EntityDoesntBelongToUserException("User " + userDetails.getUsername() +
@@ -54,61 +56,32 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public List<ReadWorkoutDto> findAll(UserDetails userDetails,
-                                        Optional<WorkoutType> type,
-                                        Optional<LocalDate> startDate,
-                                        Optional<LocalDate> endDate,
-                                        Optional<Integer> minDuration,
-                                        Optional<Integer> maxDuration) {
+    public Page<ReadWorkoutDto> findAll(WorkoutSpecDto specDto, Pageable pageable) {
         return workoutRepository.findAll(
                 WorkoutSpecs.getFullSpec(
-                    userRepository.findByUsername(userDetails.getUsername()).get(),
-                    type,
-                    startDate,
-                    endDate,
-                    minDuration,
-                    maxDuration
-                )
-        ).stream().map(workout -> modelMapper.map(workout, ReadWorkoutDto.class)).toList();
-    }
-
-    @Override
-    public Page<ReadWorkoutDto> findAll(UserDetails userDetails,
-                                        Optional<WorkoutType> type,
-                                        Optional<LocalDate> startDate,
-                                        Optional<LocalDate> endDate,
-                                        Optional<Integer> minDuration,
-                                        Optional<Integer> maxDuration,
-                                        Pageable pageable) {
-        return workoutRepository.findAll(
-                WorkoutSpecs.getFullSpec(
-                        userRepository.findByUsername(userDetails.getUsername()).get(),
-                        type,
-                        startDate,
-                        endDate,
-                        minDuration,
-                        maxDuration
+                        userRepository.findByUsername(
+                                AuthUserUtil.getCurrentUser().getUsername()
+                        ).get(),
+                        specDto
                 ),
                 pageable
-        ).map(workout -> modelMapper.map(workout, ReadWorkoutDto.class));
+        ).map(workoutMapper::toDto);
     }
 
     @Override
-    public Optional<ReadWorkoutDto> update(Long id, UserDetails userDetails, CreateUpdateWorkoutDto updateDto) {
+    public Optional<ReadWorkoutDto> update(Long id, CreateUpdateWorkoutDto updateDto) {
         Optional<Workout> workoutAtId = workoutRepository.findById(id);
+        UserDetails userDetails = AuthUserUtil.getCurrentUser();
+
         if (workoutAtId.isPresent()) {
-            if (workoutAtId.get().getUser().equals(userDetails)) {
+            if (workoutAtId.get().getUser().getUsername().equals(userDetails.getUsername())) {
                 Workout workout = workoutAtId.get();
 
-                workout.setName(updateDto.getName());
-                workout.setType(updateDto.getType());
-                workout.setDate(updateDto.getDate());
-                workout.setDuration(updateDto.getDuration());
-                workout.setCalories(updateDto.getCalories());
+                workoutMapper.update(updateDto, workout);
 
                 workout = workoutRepository.save(workout);
 
-                return Optional.ofNullable(modelMapper.map(workout, ReadWorkoutDto.class));
+                return Optional.ofNullable(workoutMapper.toDto(workout));
             }
             else {
                 throw new EntityDoesntBelongToUserException("User " + userDetails.getUsername() +
@@ -121,12 +94,14 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Optional<ReadWorkoutDto> delete(Long id, UserDetails userDetails) {
+    public Optional<ReadWorkoutDto> delete(Long id) {
         Optional<Workout> optionalWorkout = workoutRepository.findById(id);
+        UserDetails userDetails = AuthUserUtil.getCurrentUser();
+
         if (optionalWorkout.isPresent()) {
-            if (optionalWorkout.get().getUser().equals(userDetails)){
+            if (optionalWorkout.get().getUser().getUsername().equals(userDetails.getUsername())){
                 workoutRepository.delete(optionalWorkout.get());
-                return Optional.ofNullable(modelMapper.map(optionalWorkout, ReadWorkoutDto.class));
+                return Optional.ofNullable(workoutMapper.toDto(optionalWorkout.get()));
             }
             else {
                 throw new EntityDoesntBelongToUserException("User " + userDetails.getUsername() +

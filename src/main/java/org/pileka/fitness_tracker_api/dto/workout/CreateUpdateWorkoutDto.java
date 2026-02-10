@@ -10,7 +10,6 @@ import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import java.time.LocalDate;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class CreateUpdateWorkoutDto {
@@ -27,7 +26,7 @@ public class CreateUpdateWorkoutDto {
 
     @NotNull(message = "Duration is required")
     @Positive(message = "Duration must be greater than 0")
-    private Integer duration; // в минутах
+    private Integer duration;
 
     @NotNull(message = "Calories burned is required")
     @Positive(message = "Calories burned must be greater than 0")

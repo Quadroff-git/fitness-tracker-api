@@ -9,7 +9,6 @@ import org.pileka.fitness_tracker_api.domain.WorkoutType;
 import java.time.LocalDate;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class ReadWorkoutDto {
@@ -21,7 +20,7 @@ public class ReadWorkoutDto {
 
     private LocalDate date;
 
-    private Integer duration; // в минутах
+    private Integer duration;
 
     private Integer calories;
 

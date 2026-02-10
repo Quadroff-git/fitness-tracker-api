@@ -8,6 +8,7 @@ import org.pileka.fitness_tracker_api.dto.auth.RegistrationDto;
 import org.pileka.fitness_tracker_api.exception.EntityRestrictionViolationException;
 import org.pileka.fitness_tracker_api.exception.RefreshTokenInvalidException;
 import org.pileka.fitness_tracker_api.exception.UserLoginFailedException;
+import org.pileka.fitness_tracker_api.mapper.UserMapper;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.security.JwtTokenProvider;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -22,21 +23,16 @@ import org.springframework.stereotype.Service;
 public class AuthServiceImpl implements org.pileka.fitness_tracker_api.service.AuthService {
 
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
     @Override
     public void register(RegistrationDto request) throws EntityRestrictionViolationException {
-        // Mapping manually here because the passwords aren't encoded in the DTO,
-        // and if you have to encrypt and inject it manually why even bother?
-        User user = User.builder()
-                .username(request.getUsername())
-                .email(request.getEmail())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .build();
+        User newUser = userMapper.toModel(request, passwordEncoder);
         try {
-            userRepository.save(user);
+            userRepository.save(newUser);
         } catch (DataIntegrityViolationException e) {
             throw new EntityRestrictionViolationException(e);
         }
@@ -55,11 +51,7 @@ public class AuthServiceImpl implements org.pileka.fitness_tracker_api.service.A
             throw new UserLoginFailedException(e);
         }
 
-        // If we get here, credentials are valid
-        User user = userRepository.findByUsername(request.getUsername())
-                .orElseThrow();
-
-        return getTokenDto(user.getUsername());
+        return getTokenDto(request.getUsername());
     }
 
     @Override
