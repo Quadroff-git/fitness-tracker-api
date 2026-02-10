@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class AuthAdvice {
     @ExceptionHandler({UserLoginFailedException.class,
     RefreshTokenInvalidException.class})
-    @ResponseStatus(code = HttpStatus.UNAUTHORIZED, reason = "Client is unauthorized for this operation")
+    @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
     ResponseEntity<String> handleGenericUnauthorized() {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
