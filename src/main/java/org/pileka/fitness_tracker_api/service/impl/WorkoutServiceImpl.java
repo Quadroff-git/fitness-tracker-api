@@ -6,6 +6,7 @@ import org.pileka.fitness_tracker_api.dto.workout.CreateUpdateWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.ReadWorkoutDto;
 import org.pileka.fitness_tracker_api.dto.workout.WorkoutSpecDto;
 import org.pileka.fitness_tracker_api.exception.EntityDoesntBelongToUserException;
+import org.pileka.fitness_tracker_api.exception.EntityDoesntExistException;
 import org.pileka.fitness_tracker_api.mapper.WorkoutMapper;
 import org.pileka.fitness_tracker_api.repository.UserRepository;
 import org.pileka.fitness_tracker_api.repository.WorkoutRepository;
@@ -51,7 +52,7 @@ public class WorkoutServiceImpl implements WorkoutService {
             }
         }
         else {
-            return Optional.empty();
+            throw new EntityDoesntExistException("Workout with id " + id + " doesn't exist");
         }
     }
 
