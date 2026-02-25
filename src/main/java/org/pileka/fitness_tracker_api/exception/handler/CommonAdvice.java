@@ -1,6 +1,7 @@
 package org.pileka.fitness_tracker_api.exception.handler;
 
 import org.pileka.fitness_tracker_api.exception.EntityDoesntBelongToUserException;
+import org.pileka.fitness_tracker_api.exception.EntityDoesntExistException;
 import org.pileka.fitness_tracker_api.exception.EntityRestrictionViolationException;
 import org.pileka.fitness_tracker_api.exception.InvalidFileUploadedException;
 import org.springframework.dao.DataAccessException;
@@ -39,6 +40,12 @@ public class CommonAdvice {
         });
 
         return ResponseEntity.badRequest().body(errorInfo.toString());
+    }
+
+    @ExceptionHandler(EntityDoesntExistException.class)
+    @ResponseStatus(code = HttpStatus.NOT_FOUND)
+    public ResponseEntity<String> handleEntityDoesntExistException(EntityDoesntExistException e) {
+        return ResponseEntity.notFound().build();
     }
 
     @ExceptionHandler(EntityRestrictionViolationException.class)

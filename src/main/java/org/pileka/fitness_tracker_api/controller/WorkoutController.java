@@ -35,11 +35,9 @@ public interface WorkoutController {
     @Operation(summary = "Get user's workout by id",
             tags = {"workouts"},
             description = "Returns user's workout with specified id if one exists",
-            responses = {
-                    @ApiResponse(description = "The workout"),
-                    @ApiResponse(responseCode = "404", description = "Workout not found")}
+            responses = {@ApiResponse(description = "The workout")}
     )
-    ResponseEntity<ReadWorkoutDto> getWorkoutById(@PathVariable Long id);
+    ReadWorkoutDto getWorkoutById(@PathVariable Long id);
 
     @PostMapping(produces = "application/json")
     @Operation(summary = "Add workout",
@@ -56,10 +54,9 @@ public interface WorkoutController {
             description = "Updates a workout with the specified id if one exists and belongs to the user and returns " +
                     "the updated workout",
             responses = {
-                    @ApiResponse(description = "The updated workout"),
-                    @ApiResponse(responseCode = "404", description = "Workout not found")}
+                    @ApiResponse(description = "The updated workout")}
     )
-    ResponseEntity<ReadWorkoutDto> updateWorkout(@PathVariable Long id,
+    ReadWorkoutDto updateWorkout(@PathVariable Long id,
                                                  @Valid @RequestBody CreateUpdateWorkoutDto updateDto);
 
     @DeleteMapping(path = "/{id}", produces = "application/json")
@@ -68,8 +65,7 @@ public interface WorkoutController {
             description = "Updates a workout with the specified id if one exists and belongs to the user and returns" +
                     "the representation of the deleted workout",
             responses = {
-                    @ApiResponse(description = "The deleted workout"),
-                    @ApiResponse(responseCode = "404", description = "Workout not found")}
+                    @ApiResponse(description = "The deleted workout")}
     )
-    ResponseEntity<ReadWorkoutDto> deleteWorkout(@PathVariable Long id);
+    ReadWorkoutDto deleteWorkout(@PathVariable Long id);
 }
