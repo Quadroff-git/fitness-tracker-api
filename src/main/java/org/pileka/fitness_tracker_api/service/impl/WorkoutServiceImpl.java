@@ -38,13 +38,13 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Optional<ReadWorkoutDto> findById(Long id) {
+    public ReadWorkoutDto findById(Long id) {
         Optional<Workout> workoutAtId = workoutRepository.findById(id);
         UserDetails userDetails = AuthUserUtil.getCurrentUser();
 
         if (workoutAtId.isPresent()) {
             if (workoutAtId.get().getUser().getUsername().equals(userDetails.getUsername())) {
-                return Optional.ofNullable(workoutMapper.toDto(workoutAtId.get()));
+                return workoutMapper.toDto(workoutAtId.get());
             }
             else {
                 throw new EntityDoesntBelongToUserException("User " + userDetails.getUsername() +
@@ -70,7 +70,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Optional<ReadWorkoutDto> update(Long id, CreateUpdateWorkoutDto updateDto) {
+    public ReadWorkoutDto update(Long id, CreateUpdateWorkoutDto updateDto) {
         Optional<Workout> workoutAtId = workoutRepository.findById(id);
         UserDetails userDetails = AuthUserUtil.getCurrentUser();
 
@@ -82,7 +82,7 @@ public class WorkoutServiceImpl implements WorkoutService {
 
                 workout = workoutRepository.save(workout);
 
-                return Optional.ofNullable(workoutMapper.toDto(workout));
+                return workoutMapper.toDto(workout);
             }
             else {
                 throw new EntityDoesntBelongToUserException("User " + userDetails.getUsername() +
@@ -90,19 +90,19 @@ public class WorkoutServiceImpl implements WorkoutService {
             }
         }
         else {
-            return Optional.empty();
+            throw new EntityDoesntExistException("Workout with id " + id + " doesn't exist");
         }
     }
 
     @Override
-    public Optional<ReadWorkoutDto> delete(Long id) {
+    public ReadWorkoutDto delete(Long id) {
         Optional<Workout> optionalWorkout = workoutRepository.findById(id);
         UserDetails userDetails = AuthUserUtil.getCurrentUser();
 
         if (optionalWorkout.isPresent()) {
             if (optionalWorkout.get().getUser().getUsername().equals(userDetails.getUsername())){
                 workoutRepository.delete(optionalWorkout.get());
-                return Optional.ofNullable(workoutMapper.toDto(optionalWorkout.get()));
+                return workoutMapper.toDto(optionalWorkout.get());
             }
             else {
                 throw new EntityDoesntBelongToUserException("User " + userDetails.getUsername() +
@@ -110,7 +110,7 @@ public class WorkoutServiceImpl implements WorkoutService {
             }
         }
         else {
-            return Optional.empty();
+            throw new EntityDoesntExistException("Workout with id " + id + " doesn't exist");
         }
     }
 }
