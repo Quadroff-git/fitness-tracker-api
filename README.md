@@ -16,7 +16,6 @@ The documentation is available at:
 Swagger UI is available at `your-server-name:8080/swagger-ui.html`
 
 ## Current state
-The following requirements are met:
 - All main API endpoints fully implemented, as well as an authentication API.
 - JWT authentication implemented using JJWT for token generation
 - Flexible filtering, sorting and pagination implemented for the main GET endpoint
@@ -26,8 +25,9 @@ The following requirements are met:
 - The code adheres to SOLID and is split into proper 3-layer architecture, as well as a number of additional classes.
 Base level interfaces were extracted wherever feasible
 - DTO objects used throughout the code
-- Business logic (service layer classes) test coverage is 93% or higher for all metrics
 - GitFlow workflow used
 - Conventional Commits specification followed
 - Docker containerization set up
 - Swagger (OpenAPI) documentation generation set up. 
+- Unit tests do not compile due to major API changes in the latest patches. docker compose is configured to ignore them,
+so the app can be deployed without any problem.
